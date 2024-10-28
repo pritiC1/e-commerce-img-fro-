@@ -1,0 +1,42 @@
+.hero-section {
+  background-color: #f8f0f4; /* Light background color */
+  padding: 20px;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  
+  /* Ensure hero section has a fixed height and width to match the upper box */
+  height: 520px; /* Set this to the height of the upper box */
+  width: 100%; /* Make it take the full width of its container */
+  max-width: 500px; /* Adjust max-width to control the horizontal size */
+  box-sizing: border-box; /* Ensure padding is included in width/height */
+}
+
+.hero-section h2 {
+  margin-bottom: 20px;
+  font-size: 24px; /* Title font size */
+}
+
+.order-summary {
+  margin-bottom: 10px; /* Space below order summary */
+}
+
+.order-item {
+  background-color: #fff; /* White background for order items */
+  padding: 15px;
+  margin-bottom: 10px; /* Space between order items */
+  border-radius: 3px; /* Rounded corners */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.view-all-button {
+  padding: 10px 20px;
+  background-color: #007bff; /* Button color */
+  color: white; /* Button text color */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+}
+
+.view-all-button:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}

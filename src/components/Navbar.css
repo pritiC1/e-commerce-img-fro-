@@ -1,0 +1,58 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #9d3467; /* Change as needed */
+  padding: 10px 20px; /* Adjust padding */
+  width: 1200px;
+}
+
+.logo img {
+  height: 50px; /* Adjust logo size */
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px; /* Space between links */
+}
+
+.nav-links a {
+  color: white; /* Change text color */
+  text-decoration: none; /* Remove underline */
+  font-size: 16px; /* Adjust font size */
+}
+
+.search-bar {
+  flex-grow: 1; /* Allow the search bar to take up remaining space */
+  margin: 0 20px; /* Margin around the search bar */
+}
+
+.search-bar input {
+  width: 60%; /* Full width */
+  padding: 5px; /* Padding inside input */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center; /* Center the items vertically */
+}
+
+.login-button,
+.cart-button {
+  margin-left: 10px; /* Space between buttons */
+  padding: 8px 12px; /* Button padding */
+  color: white; /* Text color */
+  background-color: #007bff; /* Button color */
+  border: none; /* Remove border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.profile-image {
+  width: 40px; /* Profile image size */
+  height: 40px; /* Profile image size */
+  border-radius: 50%; /* Round image */
+  margin-left: 10px; /* Space from buttons */
+}
