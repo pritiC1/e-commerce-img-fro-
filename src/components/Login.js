@@ -22,6 +22,8 @@ const Login = () => {
       localStorage.setItem('access_token', response.data.access);  // Access token
       localStorage.setItem('refresh_token', response.data.refresh); // Refresh token
 
+      axios.defaults.headers['Authorization'] = `Bearer ${response.data.access}`;
+
       // Navigate to dashboard after successful login
       navigate('/Dashboard');
     } catch (error) {

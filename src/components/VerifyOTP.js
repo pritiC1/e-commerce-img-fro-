@@ -8,16 +8,19 @@ const VerifyOTP = () => {
     const [otp, setOtp] = useState(''); // OTP input
     const [message, setMessage] = useState(''); // Message for success/error
     const [isVerified, setIsVerified] = useState(false); // Track if OTP is verified
+    const [loading, setLoading] = useState(false); // Track loading state
     const navigate = useNavigate();
 
     // Handle OTP verification submission
     const handleVerifyOTP = async (e) => {
         e.preventDefault();
         setMessage(''); // Clear any previous messages
+        setLoading(true); // Start loader
 
         // Validate inputs
         if (!username || !otp) {
             setMessage('Username and OTP are required.');
+            setLoading(false); // Stop loader if validation fails
             return;
         }
 
@@ -45,9 +48,10 @@ const VerifyOTP = () => {
                 // Display server-side error messages
                 setMessage(error.response.data.error || 'An error occurred. Please try again.');
             } else {
-                // Fallback error message
                 setMessage('An error occurred. Please try again.');
             }
+        } finally {
+            setLoading(false); // Stop loader
         }
     };
 
@@ -75,6 +79,8 @@ const VerifyOTP = () => {
                 </div>
                 <button type="submit">Verify OTP</button>
             </form>
+            {loading && <div className="spinner"></div>} {/* Spinner */}
+
             {message && <p className={`message ${isVerified ? 'success' : 'error'}`}>{message}</p>}
         </div>
     );

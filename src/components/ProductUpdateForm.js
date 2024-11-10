@@ -1,63 +1,123 @@
-// src/components/ProductUpdateForm.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+// ProductUploadForm.js (or inside your Dashboard component)
+import React, { useState } from "react";
+import axios from "axios";
 
-const ProductUpdateForm = () => {
-    const { productId } = useParams(); // Get the product ID from the URL
-    const [productData, setProductData] = useState({
+const ProductUploadForm = ({ isSuperuser }) => {
+  const [newProduct, setNewProduct] = useState({
+    name: '',
+    description: '',
+    price: '',
+    brand: '',
+    category: '',
+    color: '',
+    size: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewProduct((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validation check
+    if (!newProduct.name || !newProduct.price || !newProduct.brand || !newProduct.description || !newProduct.category || !newProduct.color || !newProduct.size) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Make POST request to backend to create a new product
+      await axios.post('http://localhost:8000/api/products/', newProduct, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Authorization using JWT token
+        },
+      });
+
+      setNewProduct({
         name: '',
         description: '',
         price: '',
-        image: null,
-        // Add other fields as necessary
-    });
+        brand: '',
+        category: '',
+        color: '',
+        size: '',
+      });
+      setError('');
+    } catch (error) {
+      setError('Error uploading product. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Fetch product data for editing
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const response = await axios.get(`/api/products/${productId}/`); // Adjust the endpoint as necessary
-                setProductData(response.data);
-            } catch (error) {
-                console.error('Error fetching product data:', error);
-            }
-        };
+  if (!isSuperuser) return null; // Only show form to superusers
 
-        fetchProduct();
-    }, [productId]);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProductData({
-            ...productData,
-            [name]: name === 'image' ? e.target.files[0] : value,
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        for (const key in productData) {
-            formData.append(key, productData[key]);
-        }
-        try {
-            await axios.put(`/api/products/update/${productId}/`, formData); // Adjust the endpoint as necessary
-            // Optionally redirect or give feedback
-        } catch (error) {
-            console.error('Error updating product:', error);
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <input type="text" name="name" value={productData.name} onChange={handleChange} required />
-            <textarea name="description" value={productData.description} onChange={handleChange} required />
-            <input type="number" name="price" value={productData.price} onChange={handleChange} required />
-            <input type="file" name="image" onChange={handleChange} />
-            <button type="submit">Update Product</button>
-        </form>
-    );
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        name="name"
+        value={newProduct.name}
+        onChange={handleInputChange}
+        placeholder="Product Name"
+        required
+      />
+      <input
+        type="text"
+        name="description"
+        value={newProduct.description}
+        onChange={handleInputChange}
+        placeholder="Product Description"
+      />
+      <input
+        type="number"
+        name="price"
+        value={newProduct.price}
+        onChange={handleInputChange}
+        placeholder="Product Price"
+        required
+      />
+      <input
+        type="text"
+        name="brand"
+        value={newProduct.brand}
+        onChange={handleInputChange}
+        placeholder="Product Brand"
+        required
+      />
+      <input
+        type="text"
+        name="category"
+        value={newProduct.category}
+        onChange={handleInputChange}
+        placeholder="Product Category"
+      />
+      <input
+        type="text"
+        name="color"
+        value={newProduct.color}
+        onChange={handleInputChange}
+        placeholder="Product Color"
+      />
+      <input
+        type="text"
+        name="size"
+        value={newProduct.size}
+        onChange={handleInputChange}
+        placeholder="Product Size"
+      />
+      <button type="submit">{loading ? 'Uploading...' : 'Upload Product'}</button>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+    </form>
+  );
 };
 
-export default ProductUpdateForm;
+export default ProductUploadForm;

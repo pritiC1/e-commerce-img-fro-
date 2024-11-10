@@ -1,7 +1,11 @@
+// src/components/ProductEditForm.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
-const ProductUploadForm = ({ onProductUploaded }) => {
+const ProductEditForm = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -13,25 +17,33 @@ const ProductUploadForm = ({ onProductUploaded }) => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isSuperUser, setIsSuperUser] = useState(false);
 
   useEffect(() => {
-    const checkUserStatus = () => {
-      const user = JSON.parse(localStorage.getItem('user')); // Get user data from localStorage
-      if (user) {
-        setIsAuthenticated(true);  // User is authenticated
-        setIsSuperUser(user.is_superuser);  // Check if user is a superuser
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/products/${id}/`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setFormData(response.data);
+      } catch (err) {
+        if (err.response && err.response.status === 401) {
+          await refreshToken();
+          fetchProduct();
+        } else {
+          setError('Error fetching product details!');
+        }
       }
     };
-    checkUserStatus();
-  }, []);
+    fetchProduct();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -40,60 +52,42 @@ const ProductUploadForm = ({ onProductUploaded }) => {
     setError('');
     setSuccess('');
 
-    // Get the token from localStorage
-    const userToken = localStorage.getItem('token');  // Retrieve token from localStorage
-
-    if (!userToken) {
-      setError('No authentication token found.');
-      return;
-    }
-
     try {
-      const response = await axios.post(
-        'http://127.0.0.1:8000/api/products/',
+      await axios.put(
+        `http://127.0.0.1:8000/api/products/${id}/`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${userToken}`,  // Pass the token in the header
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
-      setSuccess('Product uploaded successfully!');
-      onProductUploaded(response.data);  // Pass new product data back to parent
+      setSuccess('Product updated successfully!');
+      navigate('/products');
     } catch (err) {
       if (err.response && err.response.status === 401) {
-        // Token expired, attempt to refresh it
         await refreshToken();
         handleSubmit(e);  // Retry after refreshing the token
       } else {
-        setError('Error uploading product! Please check your input.');
+        setError('Error updating product!');
       }
     }
   };
 
   const refreshToken = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/refresh/', {
+      const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
         refresh: localStorage.getItem('refreshToken'),
       });
       localStorage.setItem('token', response.data.access);
     } catch (err) {
       setError('Session expired. Please log in again.');
-      // Redirect to login or handle further as needed
     }
   };
 
-  if (!isAuthenticated) {
-    return <p>Please log in to upload products.</p>;
-  }
-
-  if (!isSuperUser) {
-    return <p>You do not have permission to upload products.</p>;
-  }
-
   return (
-    <div className="product-upload-form">
-      <h2>Upload Product</h2>
+    <div className="product-edit-form">
+      <h2>Edit Product</h2>
       {error && <p className="error">{error}</p>}
       {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit}>
@@ -145,10 +139,10 @@ const ProductUploadForm = ({ onProductUploaded }) => {
           value={formData.size}
           onChange={handleChange}
         />
-        <button type="submit">Upload Product</button>
+        <button type="submit">Update Product</button>
       </form>
     </div>
   );
 };
 
-export default ProductUploadForm;
+export default ProductEditForm;

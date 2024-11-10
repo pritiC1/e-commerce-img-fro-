@@ -20,8 +20,12 @@ const Navbar = () => {
         <input type="text" placeholder="Search..." />
       </div>
       <div className="auth-buttons">
-        <button className="login-button">Login</button>
-        {/* Add a class to the profile image for styling */}
+      <Link to="/login">
+          <button className="login-button">Login</button>
+        </Link>
+        <Link to="/register">
+          <button className="register-button">Register</button>
+        </Link>
         <img src={profile} alt="profile" className="profile-image" />
         <button className="cart-button">Cart</button>
       </div>

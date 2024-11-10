@@ -36,3 +36,41 @@
     transform: rotate(360deg);
   }
 }
+
+
+.dashboard {
+  padding: 20px;
+  text-align: center;
+}
+
+.product-upload-form {
+  margin-bottom: 20px;
+}
+
+.product-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  width: 250px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.product-card h3 {
+  font-size: 1.2em;
+  margin: 0 0 10px;
+}
+
+.product-card p {
+  margin: 5px 0;
+  color: #555;
+}

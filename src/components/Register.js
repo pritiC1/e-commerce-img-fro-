@@ -52,7 +52,7 @@ function Register() {
     };
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/Register/', formattedData);
+      const response = await axios.post('http://127.0.0.1:8000/api/register/', formattedData);
       
       if (response.status === 201) {
         setMessage(response.data.message || 'Registration successful.');
