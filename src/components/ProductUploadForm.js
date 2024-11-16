@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ProductUploadForm.css';
 
 const ProductUploadForm = ({ onProductUploaded }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     price: '',
-    brand: '',
-    category: '',
-    color: '',
-    size: ''
+    image: null
   });
+  const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,23 +34,52 @@ const ProductUploadForm = ({ onProductUploaded }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(file.type)) {
+        setError('Please upload a valid image file (JPEG, PNG, GIF).');
+        return;
+      }
+
+      if (file.size > maxSize) {
+        setError('File size exceeds 5MB.');
+        return;
+      }
+
+      setFormData((prevData) => ({
+        ...prevData,
+        image: file
+      }));
+      setImagePreview(URL.createObjectURL(file));  // Preview the selected image
+      setError('');  // Clear error
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Get the token from localStorage
-    const userToken = localStorage.getItem('token');  // Retrieve token from localStorage
+    const userToken = localStorage.getItem('acceess_token');  // Retrieve token from localStorage
 
     if (!userToken) {
       setError('No authentication token found.');
       return;
     }
 
+    const formDataToSubmit = new FormData();
+    for (const key in formData) {
+      formDataToSubmit.append(key, formData[key]);
+    }
+
     try {
       const response = await axios.post(
         'http://127.0.0.1:8000/api/products/',
-        formData,
+        formDataToSubmit,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,  // Pass the token in the header
@@ -83,6 +111,7 @@ const ProductUploadForm = ({ onProductUploaded }) => {
     }
   };
 
+ 
   if (!isAuthenticated) {
     return <p>Please log in to upload products.</p>;
   }
@@ -117,36 +146,27 @@ const ProductUploadForm = ({ onProductUploaded }) => {
           value={formData.price}
           onChange={handleChange}
         />
+        <label htmlFor="image" className="upload-label">Upload Product Image</label>
         <input
-          type="text"
-          name="brand"
-          placeholder="Brand"
-          value={formData.brand}
-          onChange={handleChange}
+          type="file"
+          name="image"
+          id="image"
+          onChange={handleImageChange}
         />
-        <input
-          type="text"
-          name="category"
-          placeholder="Category"
-          value={formData.category}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="color"
-          placeholder="Color"
-          value={formData.color}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="size"
-          placeholder="Size"
-          value={formData.size}
-          onChange={handleChange}
-        />
+        
         <button type="submit">Upload Product</button>
       </form>
+      <div className="product-card">
+        {/* Mock display for uploaded product */}
+        <h3>{formData.name}</h3>
+        <p>{formData.description}</p>
+        <p>Price: ${formData.price}</p>
+        <p>Category: {formData.category}</p> {/* Added category */}
+        <p>Color: {formData.color}</p> {/* Added color */}
+        <p>Size: {formData.size}</p> {/* Added size */}
+        {imagePreview && <img src={imagePreview} alt="Uploaded product preview" className="image-preview" />}
+        
+      </div>
     </div>
   );
 };

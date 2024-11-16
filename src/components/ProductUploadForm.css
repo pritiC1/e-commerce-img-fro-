@@ -21,12 +21,12 @@
     margin-bottom: 20px;
 }
 
-label {
+.upload-label {
     display: block;
+    margin-bottom: 10px;
     font-weight: bold;
-    margin-bottom: 5px;
     color: #333;
-}
+  }
 
 input[type="text"],
 input[type="number"],
@@ -49,22 +49,48 @@ input[type="file"] {
     margin-top: 10px;
     font-size: 16px;
     border: none;
-}
-
-input[type="file"]::-webkit-file-upload-button {
     padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #4CAF50;
-    color: white;
-    font-weight: bold;
     cursor: pointer;
     border-radius: 4px;
 }
 
-input[type="file"]::-webkit-file-upload-button:hover {
-    background-color: #45a049;
+input[type="file"] {
+    display: block;  /* Ensure it is displayed */
+    margin-top: 10px; /* Add some margin to the input */
+  }
+.file-input-label {
+    display: block;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    margin-top: 10px;
 }
 
+input[type="file"] {
+    display: block;  /* Ensure it takes up space */
+    margin-top: 10px;  /* Add some margin to separate it from other fields */
+    width: 100%;  /* Make the input take the full width of the form */
+    padding: 5px;
+  }
+
+/* Image Preview */
+.image-preview {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 200px;
+    max-height: 200px;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 4px;
+  }
 /* Submit Button */
 button {
     width: 100%;
@@ -101,3 +127,21 @@ textarea.error {
     margin-top: 10px;
     text-align: center;
 }
+.product-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #45a049;
+  }

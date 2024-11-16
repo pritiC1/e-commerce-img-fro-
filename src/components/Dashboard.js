@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from './Navbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
+import { useCart } from '../cartContext'; // Importing Cart context
+import { Link } from 'react-router-dom'; 
 import HeroSection from './Hero'; // HeroSection on the left
 import { jwtDecode } from 'jwt-decode'; // Correct import for jwtDecode
 import './Dashboard.css'; // Create a CSS file for styling
-import ProductUploadForm from './ProductUploadForm';
+import logo from '../Assets/logo.png';
 
 
 const Dashboard = () => {
+
+  const [isSuperuser, setIsSuperuser] = useState(false); // Track if user is superuser
+  const [loading, setLoading] = useState(false); // Loading state
+  const [error, setError] = useState(''); // Error state for API requests
+  const { addToCart, cart } = useCart(); // Destructure addToCart and cart
   const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -17,10 +26,21 @@ const Dashboard = () => {
     category: '',
     color: '',
     size: '',
+    image: null, 
   });
-  const [isSuperuser, setIsSuperuser] = useState(false); // Track if user is superuser
-  const [loading, setLoading] = useState(false); // Loading state
-  const [error, setError] = useState(''); // Error state for API requests
+
+  
+  
+
+  const handleImageChange = (e) => {
+    setNewProduct((prev) => ({
+      ...prev,
+      image: e.target.files[0],
+    }));
+  };
+
+
+
 
   // Function to fetch products from the backend
   const fetchProducts = async () => {
@@ -33,7 +53,7 @@ const Dashboard = () => {
       });
       setProducts(response.data); // Store the fetched products in state
     } catch (error) {
-      setError('Error fetching products. Please try again.');
+      setError('Error in product uploading . Please login again .');
       console.error('Error fetching products:', error);
     } finally {
       setLoading(false); // Set loading to false after the fetch is complete
@@ -42,7 +62,7 @@ const Dashboard = () => {
 
   // Function to check if user is superuser
   const checkIfSuperuser = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access_token');
     if (token) {
       try {
         const decodedToken = jwtDecode(token); // Correctly use jwtDecode
@@ -55,12 +75,15 @@ const Dashboard = () => {
     }
   };
 
+  
   // Fetch products and check if user is superuser when the component mounts
   useEffect(() => {
     fetchProducts();
-    checkIfSuperuser(); // Check if the user is a superuser
+    checkIfSuperuser();
   }, []);
 
+
+  
   // Handle input changes for new product
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +96,7 @@ const Dashboard = () => {
   // Handle form submission for uploading new product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newProduct.name || !newProduct.price || !newProduct.brand || !newProduct.description || !newProduct.category || !newProduct.color || !newProduct.size) {
+    if (!newProduct.name || !newProduct.price  || !newProduct.description || !newProduct.image) {
       setError('Please fill in all required fields.');
       return;
     }
@@ -95,10 +118,7 @@ const Dashboard = () => {
         name: '',
         description: '',
         price: '',
-        brand: '',
-        category: '',
-        color: '',
-        size: '',
+        image: null,
       }); // Reset form
       fetchProducts(); // Fetch updated products after uploading
     } catch (error) {
@@ -112,7 +132,10 @@ const Dashboard = () => {
   // Handle product deletion
   const handleDelete = async (productId) => {
     try {
-      await axios.delete(`http://localhost:8000/api/products/${productId}/`, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+      await axios.delete(`http://localhost:8000/api/products/${productId}/`, { 
+        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+     });
 
 
 
@@ -124,24 +147,75 @@ const Dashboard = () => {
     }
   };
 
-
-  const handleNewProduct = (newProduct) => {
-    setProducts((prevProducts) => [...prevProducts, newProduct]);  // Add the new product to the state
+  const handleLike = async (productId) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.post(
+        `http://localhost:8000/api/products/${productId}/like/`, 
+        {}, 
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+  
+      // Update the product list with the new like count and liked status
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === productId
+            ? { ...product, like_count: response.data.like_count, liked: response.data.liked }
+            : product
+        )
+      );
+    } catch (error) {
+      setError('Failed to like product.');
+      console.error('Error liking product:', error);
+    }
   };
+  
+  // Handle add to cart
+  const handleAddToCart = (product) => {
+    addToCart(product); // Adds product to cart
+    console.log(cart); // Check that cart updates when adding product
+  };
+
+
+
+
+  if (checkIfSuperuser) {
+    console.log("User is a superuser");
+  }
 
 
   return (
     <div className="dashboard">
-      <Navbar />
+      {/* Navbar */}
+      <nav className="navbar">
+      <div className="logo">
+        <img src={logo} alt="Logo" />
+      </div>
+        <div className="navbar-container">
+          
+        <div style={{ display: 'flex', gap: '10px' }}>
+        <Link to="/">
+          <button className="navbar-button">Home</button>
+        </Link>
+          <Link to="/cart">
+          <button className="navbar-button">Cart ({cart.length})</button> 
+          </Link>
+          <Link to="/login">
+            <button className="login-button">Login</button>
+          </Link>
+          
+        </div>
+        </div>
+      </nav>
+
       <div className="dashboard-content">
         <div className="hero-section">
           <HeroSection />
         </div>
         <div className="main-content">
-          {/* Conditionally render product upload form if user is a superuser */}
           {isSuperuser && (
-                <ProductUploadForm onProductUploaded={handleNewProduct} />
-            )}
             <form onSubmit={handleSubmit}>
               <input
                 type="text"
@@ -167,39 +241,18 @@ const Dashboard = () => {
                 required
               />
               <input
-                type="text"
-                name="brand"
-                value={newProduct.brand}
-                onChange={handleInputChange}
-                placeholder="Product Brand"
+                type="file"
+                name="image"
+                onChange={handleImageChange}
                 required
               />
-              <input
-                type="text"
-                name="category"
-                value={newProduct.category}
-                onChange={handleInputChange}
-                placeholder="Product Category"
-              />
-              <input
-                type="text"
-                name="color"
-                value={newProduct.color}
-                onChange={handleInputChange}
-                placeholder="Product Color"
-              />
-              <input
-                type="text"
-                name="size"
-                value={newProduct.size}
-                onChange={handleInputChange}
-                placeholder="Product Size (e.g., S, M, L, XL)"
-              />
               <button type="submit">{loading ? 'Uploading...' : 'Upload Product'}</button>
-            </form> 
-          
+            </form>
+
+            )}
 
           {error && <p className="error">{error}</p>}
+
 
           <h3>Uploaded Products</h3>
           {loading ? (
@@ -208,13 +261,31 @@ const Dashboard = () => {
             <div className="product-list">
               {products.map((product) => (
                 <div className="product-item" key={product.id}>
+                  {product.image_url && (
+                    <img
+                    src={`http://localhost:8000${product.image_url}`} // Correct URL path
+                    alt={product.name}
+                    className="product-image"
+                  />
+                  )}
                   <h4>{product.name}</h4>
                   <p>{product.description}</p>
-                  <p>Brand: {product.brand}</p>
-                  <p>Category: {product.category}</p>
-                  <p>Color: {product.color}</p>
-                  <p>Size: {product.size}</p>
                   <p>Price: ${product.price}</p>
+                  
+                  <div className="like-container">
+                  <FontAwesomeIcon
+                    icon={product.liked ? solidHeart : regularHeart} // Toggle between filled and outline heart
+                    style={{
+                      color: product.liked ? 'red' : 'grey', // Change color based on liked status
+                      cursor: 'pointer',
+                      fontSize: '24px', // Optional: Adjust size for better visibility
+                    }}
+                    onClick={() => handleLike(product.id)} // Toggle like on click
+                  />
+                  <p>Likes: {product.like_count}</p> {/* Display the updated like count */}
+                </div>
+
+                  <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
                   {isSuperuser && (
                     <button onClick={() => handleDelete(product.id)}>Delete Product</button>
                   )}

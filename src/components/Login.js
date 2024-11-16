@@ -9,6 +9,58 @@ const Login = () => {
   const [error, setError] = useState(''); // State to handle error messages
   const navigate = useNavigate();
 
+  const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+
+    if (!refreshToken) {
+      // No refresh token, handle logout
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      window.location.href = '/login'; // Redirect to login page
+      return null;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+        refresh: refreshToken,
+      });
+
+      // Store new access token
+      const newAccessToken = response.data.access;
+      localStorage.setItem('access_token', newAccessToken);
+      return newAccessToken;
+    } catch (error) {
+      // Handle token refresh error
+      console.error('Error refreshing token', error);
+      return null;
+    }
+  };
+
+  // Axios interceptor to refresh token on expiry
+  axios.interceptors.response.use(
+    (response) => response, // Pass the successful response through
+    async (error) => {
+      const originalRequest = error.config;
+      
+      // Check if it's a 401 error (Unauthorized) and we haven't already retried
+      if (error.response.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+
+        // Try refreshing the token
+        const newAccessToken = await refreshAccessToken();
+        if (newAccessToken) {
+          // Retry the original request with the new access token
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+          return axios(originalRequest); // Retry the request
+        }
+      }
+      return Promise.reject(error); // If the refresh failed, reject the error
+    }
+  );
+
+
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -18,14 +70,22 @@ const Login = () => {
         password,
       });
 
+      const accessToken = response.data.access;
+      const isSuperuser = response.data.is_superuser;  // Assuming the login API returns this data
+
+
+
       // Store tokens in localStorage
       localStorage.setItem('access_token', response.data.access);  // Access token
       localStorage.setItem('refresh_token', response.data.refresh); // Refresh token
+      localStorage.setItem('is_superuser', isSuperuser);  // Store the superuser status
 
-      axios.defaults.headers['Authorization'] = `Bearer ${response.data.access}`;
 
-      // Navigate to dashboard after successful login
-      navigate('/Dashboard');
+      axios.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
+
+      
+      
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed', error);
       // Check if the error response contains a specific message
