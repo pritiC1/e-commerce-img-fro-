@@ -9,45 +9,70 @@ import './ProductList.css';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
- 
+  const [nextPageUrl, setNextPageUrl] = useState(null);  // To track the next page URL for pagination
   const { addToCart } = useCart(); // Get addToCart from context
 
+
+
+  const fetchProducts = async (url) => {
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      setProducts((prevProducts) => [...prevProducts, ...response.data.products]);
+      setNextPageUrl(response.data.next);  // Set the next page URL
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      if (err.response && err.response.status === 401) {
+        refreshToken(); // Call the refresh token function
+      }
+    }
+  };
+
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchProducts = async (url) => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/products/', {
+        const response = await axios.get(url, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        console.log(response.data.products); // Check the data structure
-        setProducts(
-          response.data.products.map((product) => ({
-            ...product,
-            liked: false, // Add a `liked` field for each product
-          }))
-        );
-      } catch (err) {
-        console.error("Error fetching products:", err);
-        if (err.response && err.response.status === 401) { 
-          refreshToken(); // Call the refresh token function
-        }
+  
+        console.log('API Response:', response.data); // Log the response
+      setProducts((prevProducts) => [...prevProducts, ...response.data.products]);
+      setNextPageUrl(response.data.next);  // Set the next page URL
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      if (err.response && err.response.status === 401) {
+        refreshToken(); // Call the refresh token function
       }
-    };
-    fetchProducts();
-  }, []);
+    }
+  };
 
-    const handleAddToCart = (product) => {
-      addToCart(product); // Pass the entire product object to the cart
-    };
+    fetchProducts('http://127.0.0.1:8000/api/products/');
+  }, []);  // Empty dependency array means this runs only once on component mount
+  
+  const handleLoadMore = () => {
+    if (nextPageUrl) {
+      fetchProducts(nextPageUrl);  // Fetch next page of products
+    }
+  };
+
+
+  const handleAddToCart = (product) => {
+    addToCart(product); // Pass the entire product object to the cart
+  };
 
   
     const refreshToken = async () => {
     try {
       const response = await axios.post('http://127.0.0.1:8000/api/refresh/', {
-        refresh: localStorage.getItem('refreshToken'),
+        refresh: localStorage.getItem('refresh_Token'),
       });
-      localStorage.setItem('token', response.data.access);
+      localStorage.setItem('access_token', response.data.access);
     } catch (err) {
       // Log the error details for debugging
       console.log(err.response); // Logs the error details
@@ -63,7 +88,7 @@ const ProductList = () => {
     }
   };
 
-  const handleLike = async (productId ,isLiked) => {
+  const handleLike = async (productId, isLiked) => {
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/api/like/${productId}/`,
@@ -75,23 +100,24 @@ const ProductList = () => {
         }
       );
 
-      // Update the product's like count
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.id === productId
-            ? { 
-              ...product, 
-              like_count: response.data.like_count, 
-              liked: response.data.liked // Toggle the like status
-            }
-          : product
+            ? {
+                ...product,
+                like_count: response.data.like_count,
+                liked: response.data.liked,
+              }
+            : product
         )
       );
     } catch (err) {
       console.error('Error liking the product:', err);
     }
   };
-  console.log('Products State:', products);
+
+
+
   return (
     <div className="product-grid">
       {products.map((product) => (
@@ -108,25 +134,12 @@ const ProductList = () => {
             </div>
              
             {product.image_url ? (
-            <img
-              src={product.image_url.startsWith('http') ? product.image_url : `http://127.0.0.1:8000${product.image_url}`}
-              alt={product.name}
-              className="product-image"
-              onError={(e) => { e.target.onerror = null; e.target.src = '/default-image.jpg'; }} // Fallback image
-            />
+            <img src={product.image_url} alt={product.name} />
           ) : (
-            <img
-              src="/default-image.jpg" // Replace with your actual default image path
-              alt="Default"
-              className="product-image"
-            />
+            <p>No Image Available</p>
           )}
           <h3>{product.name}</h3>
           <p>{product.description}</p>
-          <p>Brand: {product.brand}</p>
-          <p>Category: {product.category}</p>
-          <p>Color: {product.color}</p>
-          <p>Size: {product.size}</p>
           <p className="price">${product.price}</p>
           <div className="like-section">
           <button
@@ -140,6 +153,12 @@ const ProductList = () => {
           <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
         </div>
       ))}
+       {/* Add a "Load More" button if there is a next page */}
+       {nextPageUrl && (
+        <button className="load-more" onClick={handleLoadMore}>
+          Load More
+        </button>
+      )}
     </div>
   );
 };

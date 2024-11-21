@@ -156,10 +156,6 @@ const handleQuantityChange = (productId, quantity) => {
             {localCart.map((item) => (
               <div key={item.productId} className="cart-item">
                 <h3>Product: {item.name}</h3>
-                <p><strong>Brand:</strong> {item.brand}</p>
-                <p><strong>Category:</strong> {item.category}</p>
-                <p><strong>Color:</strong> {item.color}</p>
-                <p><strong>Size:</strong> {item.size}</p>
                 <p><strong>Description:</strong> {item.description}</p>
                 <p>Price: ${item.price}</p>
                 {item.image_url && (

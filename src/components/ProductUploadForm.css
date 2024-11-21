@@ -1,147 +1,70 @@
-/* General Form Styles */
-.product-upload-form {
-    max-width: 600px;
-    margin: 0 auto;  /* Center the form */
+/* Center container */
+.product-upload-container {
+    width: 100%;
+    max-width: 400px; /* Reduce form width */
+    margin: 30px auto; /* Center form */
     padding: 20px;
-    background-color: #f9f9f9;
+    background: #f5f5f5;
     border: 1px solid #ddd;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.product-upload-form h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-}
-
-/* Form Group */
-.form-group {
-    margin-bottom: 20px;
-}
-
-.upload-label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #333;
-  }
-
-input[type="text"],
-input[type="number"],
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
-}
-
-textarea {
-    resize: vertical;
-}
-
-/* Styling File Upload Input */
-input[type="file"] {
-    display: block;
-    margin-top: 10px;
-    font-size: 16px;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-input[type="file"] {
-    display: block;  /* Ensure it is displayed */
-    margin-top: 10px; /* Add some margin to the input */
-  }
-.file-input-label {
-    display: block;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-    margin-top: 10px;
-}
-
-input[type="file"] {
-    display: block;  /* Ensure it takes up space */
-    margin-top: 10px;  /* Add some margin to separate it from other fields */
-    width: 100%;  /* Make the input take the full width of the form */
-    padding: 5px;
-  }
-
-/* Image Preview */
-.image-preview {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.image-preview img {
-    max-width: 200px;
-    max-height: 200px;
-    object-fit: contain;
-    border: 1px solid #ddd;
-    padding: 5px;
-    border-radius: 4px;
-  }
-/* Submit Button */
-button {
-    width: 100%;
-    background-color: #4CAF50;
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-/* Error Styling */
-input.error,
-textarea.error {
-    border-color: red;
-    background-color: #ffe6e6;
-}
-
-.error-message {
-    color: red;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-.success-message {
-    color: green;
-    font-size: 14px;
-    margin-top: 10px;
-    text-align: center;
-}
-.product-card {
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin: 10px;
-    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
+  /* Title styling */
+  .product-upload-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: #333;
+  }
+  
+  /* Form styling */
+  .product-upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between inputs */
+  }
+  
+  /* Form group styling */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  /* Label styling */
+  .form-group label {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  /* Input fields */
+  .form-group input,
+  .form-group textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+  
+  /* Submit button */
+  .submit-button {
+    padding: 10px;
+    background-color: #007bff;
     color: white;
     border: none;
+    border-radius: 5px;
+    font-size: 1rem;
     cursor: pointer;
   }
   
-  button:hover {
-    background-color: #45a049;
+  .submit-button:hover {
+    background-color: #0056b3;
   }
+  
+  /* File input */
+  .form-group input[type="file"] {
+    padding: 4px;
+  }
+  

@@ -9,11 +9,13 @@ import ProductList from './components/ProductList';
 import ProductEditForm from './components/ProductEditForm';
 import ProductDelete from './components/ProductDelete';
 import Homepage from './components/Homepage';
-import Dashboard from './components/Dashboard';
+import UserDashboard from './components/UserDashboard';
 import ProductManagement from './components/ProductManagement';
 import { CartProvider } from './cartContext'; 
 import Cart from './components/Cart';
+import LikedProducts from './components/LikedProducts';
 import './App.css';
+import Superuserdashboard from './components/Superuserdashboard';
 
 function App() {
   return (
@@ -38,8 +40,9 @@ function App() {
 
           {/* User profile and dashboard */}
           <Route path="/profile" element={<Profile />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-
+          <Route path="/userdashboard" element={<UserDashboard />} />
+          <Route path="/Superuserdashboard" element={<Superuserdashboard />} />
+          <Route path="/likedproducts" element={<LikedProducts likedProducts={LikedProducts} />} />
           <Route path="/cart" element={<Cart />} /> {/* Route to view and manage cart */}
         </Routes>
       </div>

@@ -1,36 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
-import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart as regularHeart, faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { useCart } from '../cartContext'; // Importing Cart context
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from "react-router-dom";
 import HeroSection from './Hero'; // HeroSection on the left
 import { jwtDecode } from 'jwt-decode'; // Correct import for jwtDecode
-import './Dashboard.css'; // Create a CSS file for styling
+import './UserDashboard.css'; // Create a CSS file for styling
 import logo from '../Assets/logo.png';
 
 
 const Dashboard = () => {
 
+  const navigate = useNavigate();
+  const [likedProducts, setLikedProducts] = useState([]);
   const [isSuperuser, setIsSuperuser] = useState(false); // Track if user is superuser
   const [loading, setLoading] = useState(false); // Loading state
   const [error, setError] = useState(''); // Error state for API requests
   const { addToCart, cart } = useCart(); // Destructure addToCart and cart
+  const isAuthenticated = localStorage.getItem('access_token');
   const [products, setProducts] = useState([]);
+  
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
     price: '',
-    brand: '',
-    category: '',
-    color: '',
-    size: '',
     image: null, 
   });
 
   
-  
+
+   
+
 
   const handleImageChange = (e) => {
     setNewProduct((prev) => ({
@@ -38,8 +39,6 @@ const Dashboard = () => {
       image: e.target.files[0],
     }));
   };
-
-
 
 
   // Function to fetch products from the backend
@@ -82,16 +81,6 @@ const Dashboard = () => {
     checkIfSuperuser();
   }, []);
 
-
-  
-  // Handle input changes for new product
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewProduct((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   // Handle form submission for uploading new product
   const handleSubmit = async (e) => {
@@ -147,27 +136,43 @@ const Dashboard = () => {
     }
   };
 
+  
+
   const handleLike = async (productId) => {
     try {
-      const token = localStorage.getItem('access_token');
+      // Make the API call to like or unlike the product
       const response = await axios.post(
         `http://localhost:8000/api/products/${productId}/like/`, 
-        {}, 
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
+        {}
       );
+      
+      // Assuming response.data contains the updated like count and liked status
+      const updatedProduct = response.data;
+  
+      // Update the likedProducts state with the new liked status
+      setLikedProducts((prevLikedProducts) => ({
+        ...prevLikedProducts,
+        [productId]: updatedProduct.liked,  // Toggle like status for the product
+      }));
   
       // Update the product list with the new like count and liked status
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.id === productId
-            ? { ...product, like_count: response.data.like_count, liked: response.data.liked }
+            ? {
+                ...product,
+                like_count: updatedProduct.like_count,  // Update like count
+                liked: updatedProduct.liked,            // Update liked status
+              }
             : product
         )
       );
+      const updatedLikedProducts = Object.keys(likedProducts).filter(productId => likedProducts[productId]);
+      localStorage.setItem('likedProducts', JSON.stringify(updatedLikedProducts));
+
+      
     } catch (error) {
-      setError('Failed to like product.');
+      setError('Failed to like the product. Please try again later.');
       console.error('Error liking product:', error);
     }
   };
@@ -188,25 +193,43 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      {/* Navbar */}
       <nav className="navbar">
-      <div className="logo">
-        <img src={logo} alt="Logo" />
-      </div>
-        <div className="navbar-container">
-          
-        <div style={{ display: 'flex', gap: '10px' }}>
-        <Link to="/">
-          <button className="navbar-button">Home</button>
-        </Link>
-          <Link to="/cart">
-          <button className="navbar-button">Cart ({cart.length})</button> 
-          </Link>
-          <Link to="/login">
-            <button className="login-button">Login</button>
-          </Link>
-          
+        <div className="logo">
+          <img src={logo} alt="Logo" />
         </div>
+        <div className="navbar-container">
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              className="like-button"
+              onClick={() => navigate("/Likedproducts")}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "24px",
+              }}
+            >
+              ❤️
+            </button>
+            <Link to="/">
+              <button className="navbar-button">Home</button>
+            </Link>
+
+            <Link to="/cart">
+              <button className="navbar-button">Cart</button>
+            </Link>
+            {isAuthenticated ? (
+              <Link to="/login">
+                <button className="login-button">Logout</button>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <button className="login-button">Login</button>
+              </Link>
+            )}
+            
+            
+          </div>
         </div>
       </nav>
 
@@ -214,45 +237,43 @@ const Dashboard = () => {
         <div className="hero-section">
           <HeroSection />
         </div>
+
         <div className="main-content">
-          {isSuperuser && (
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                name="name"
-                value={newProduct.name}
-                onChange={handleInputChange}
-                placeholder="Product Name"
-                required
-              />
-              <input
-                type="text"
-                name="description"
-                value={newProduct.description}
-                onChange={handleInputChange}
-                placeholder="Product Description"
-              />
-              <input
-                type="number"
-                name="price"
-                value={newProduct.price}
-                onChange={handleInputChange}
-                placeholder="Product Price"
-                required
-              />
-              <input
-                type="file"
-                name="image"
-                onChange={handleImageChange}
-                required
-              />
-              <button type="submit">{loading ? 'Uploading...' : 'Upload Product'}</button>
-            </form>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            value={newProduct.name}
+            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+            placeholder="Product Name"
+            required
+          />
+          <input
+            type="text"
+            name="description"
+            value={newProduct.description}
+            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+            placeholder="Product Description"
+          />
+          <input
+            type="number"
+            name="price"
+            value={newProduct.price}
+            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+            placeholder="Product Price"
+            required
+          />
+          <input
+            type="file"
+            name="image"
+            onChange={handleImageChange}
+            required
+          />
+          <button type="submit">{loading ? 'Uploading...' : 'Upload Product'}</button>
+        </form>
 
-            )}
-
+        
           {error && <p className="error">{error}</p>}
-
 
           <h3>Uploaded Products</h3>
           {loading ? (
@@ -261,29 +282,30 @@ const Dashboard = () => {
             <div className="product-list">
               {products.map((product) => (
                 <div className="product-item" key={product.id}>
-                  {product.image_url && (
-                    <img
-                    src={`http://localhost:8000${product.image_url}`} // Correct URL path
+                  <img
+                    src={product.image_url} // Ensure this URL is correct
                     alt={product.name}
                     className="product-image"
                   />
-                  )}
                   <h4>{product.name}</h4>
                   <p>{product.description}</p>
                   <p>Price: ${product.price}</p>
-                  
+
                   <div className="like-container">
-                  <FontAwesomeIcon
-                    icon={product.liked ? solidHeart : regularHeart} // Toggle between filled and outline heart
-                    style={{
-                      color: product.liked ? 'red' : 'grey', // Change color based on liked status
-                      cursor: 'pointer',
-                      fontSize: '24px', // Optional: Adjust size for better visibility
-                    }}
-                    onClick={() => handleLike(product.id)} // Toggle like on click
-                  />
-                  <p>Likes: {product.like_count}</p> {/* Display the updated like count */}
-                </div>
+                    <FontAwesomeIcon
+                      icon={likedProducts[product.id] ? solidHeart : regularHeart}
+                      style={{
+                        color: likedProducts[product.id] ? 'red' : 'grey',
+                        cursor: 'pointer',
+                        fontSize: '24px',
+                      }}
+                      onClick={() => handleLike(product.id)}
+                    />
+                  </div>
+                  {/* Hover Message When Product is Liked */}
+                  {likedProducts[product.id] && (
+                    <div className="liked-notification">Product Liked</div>
+                  )}
 
                   <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
                   {isSuperuser && (

@@ -39,8 +39,8 @@
 .product-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  max-width: 350px;  /* Reduced the width */
+  gap: 10px;
+  max-width: 10px;  /* Reduced the width */
   margin-bottom: 30px; /* Space between form and product list */
   margin-top: 20px;
   margin-left: auto;
@@ -106,7 +106,7 @@
 
 .product-item p {
   font-size: 14px;
-  color: #7f8c8d;
+  color:  #555;
   margin: 5px 0;
 }
 
@@ -233,4 +233,68 @@
 
 .like-container .heart-icon.liked {
   color: red;
+}
+.product-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.auth-buttons .profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+.liked-notification {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 128, 0, 0.8);  /* Green background to indicate success */
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0;
+  animation: showNotification 1s forwards;
+}
+
+@keyframes showNotification {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(10px);
+  }
+}
+
+.like-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+.add-to-cart:hover {
+  background-color: #0056b3;
+}
+
+.popup-notification {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 }

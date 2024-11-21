@@ -30,30 +30,42 @@ h2 {
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  backdrop-filter: blur(10px); /* Adds subtle blur for shine */
+  overflow: hidden; /* Keeps the image within the rounded corners */
 }
 
 .product-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+  background-color: #ffffff; /* Shiny white background effect */
+  border-color: #f1f1f1; /* Lighter border on hover */
+  filter: brightness(1.1); /* Adds a slight brightness effect */
 }
 
-/* Product Image Styling */
 .product-item img {
   width: 100%;
   height: auto;
   max-height: 250px;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 8px;
   margin-top: 15px;
+  transition: transform 0.3s ease;
 }
 
+
 /* Product Information */
+* Product Information */
 .product-item p {
   margin: 8px 0;
   font-size: 1rem;
   color: #666;
+  transition: color 0.3s ease;
 }
+.product-item:hover p {
+  color: #333; /* Darker text on hover for better contrast */
+}
+
 
 /* Action Buttons (Add to Cart, Like) */
 .product-actions {

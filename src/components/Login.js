@@ -85,14 +85,17 @@ const Login = () => {
 
       
       
-      navigate('/dashboard');
+      if (isSuperuser) {
+        navigate('/Superuserdashboard');  // Redirect to Superuser Dashboard
+      } else {
+        navigate('/UserDashboard');  // Redirect to User Dashboard
+      }
     } catch (error) {
       console.error('Login failed', error);
-      // Check if the error response contains a specific message
       if (error.response) {
-        setError(error.response.data.error || 'Invalid username or password. Please try again.'); // Show error message from API
+        setError(error.response.data.error || 'Invalid username or password. Please try again.');
       } else {
-        setError('An error occurred. Please try again.'); // Fallback error message
+        setError('An error occurred. Please try again.');
       }
     }
   };
