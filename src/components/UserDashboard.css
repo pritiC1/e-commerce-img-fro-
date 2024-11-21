@@ -16,15 +16,7 @@
   flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
-/* Hero Section */
-.hero-section {
-  flex: 0 0 250px; /* Fixed width to reduce the size */
-  margin-right: 20px;
-  background-color: #f1f1f1;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+
 
 /* Main Content */
 .main-content {
@@ -77,12 +69,12 @@
   cursor: not-allowed;
 }
 
-/* Product List Styling */
 .product-list {
   margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
-  gap: 20px;
+  display: flex; /* Use flexbox for row layout */
+  flex-wrap: wrap; /* Allow items to wrap into multiple rows */
+  gap: 20px; /* Space between items */
+  justify-content: center; /* Align items in the center */
 }
 
 .product-item {
@@ -92,7 +84,9 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   position: relative;
+  text-align: center; /* Center text inside the product item */
 }
+
 
 .product-item:hover {
   transform: translateY(-5px);
@@ -126,11 +120,13 @@
 }
 
 .product-item img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-radius: 5px;
-  margin-top: 10px;
+  width: 100%;  /* Make sure the image takes the full width of the container */
+  height: 100%;
+  object-fit: cover;  /* Ensures the image covers the container without distortion */
+  border-radius: 5px;  /* Rounded corners for the image */
+  margin-top: 10px;  /* Space from the top */
+
+  height: 350px; 
 }
 
 /* Like/Heart Button Styling */
@@ -144,23 +140,8 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  /* Adjust layout for smaller screens */
-  .dashboard-content {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .hero-section {
-    flex: 1 1 100%;
-    margin-right: 0;
-  }
-
-  .product-form {
-    max-width: 100%;
-  }
-
   .product-list {
-    margin-top: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust for smaller screens */
   }
 
   .product-item {
@@ -173,6 +154,17 @@
 
   .product-item p {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* For smaller screens, you may want to stack the items vertically */
+  .product-list {
+    grid-template-columns: 1fr; /* Single column layout */
+  }
+
+  .product-item {
+    padding: 10px;
   }
 }
 
@@ -191,7 +183,7 @@
 .navbar {
   display: flex;
   justify-content: space-around;
-  background-color: #333;
+  background-color: #ffffff;
   padding: 10px;
 }
 
@@ -235,10 +227,11 @@
   color: red;
 }
 .product-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  width: 100%;  /* Make sure the image takes the full width of the container */
+  height: 100%;  /* Maintain the aspect ratio of the image */
+  object-fit: cover;  /* Ensures the image covers the container without distortion */
+  border-radius: 8px;  /* Rounded corners for the image */
+  margin-bottom: 10px;  /* Space at the bottom */
 }
 .auth-buttons .profile-image {
   width: 40px;
@@ -247,42 +240,20 @@
   object-fit: cover;
   cursor: pointer;
 }
+
 .liked-notification {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 128, 0, 0.8);  /* Green background to indicate success */
-  color: white;
-  padding: 5px 10px;
-  border-radius: 20px;
   font-size: 12px;
-  font-weight: bold;
-  opacity: 0;
-  animation: showNotification 1s forwards;
+  color: green;
+  margin-top: 5px;
 }
 
-@keyframes showNotification {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-10px);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(10px);
-  }
-}
 
 .like-container {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 .add-to-cart:hover {
   background-color: #0056b3;
 }
@@ -297,4 +268,82 @@
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+}
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+
+/* Profile popup */
+.profile-popup {
+  position: absolute;
+  top: 50px; /* Positioning above the profile button */
+  right: 10px;
+  width: 250px;
+  padding: 15px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 10;
+  border: 1px solid #ddd;
+}
+
+/* Popup content */
+.popup-content {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+/* Profile popup headings */
+.popup-content h4 {
+  margin-bottom: 10px;
+}
+
+.popup-content h5 {
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+/* Logout button */
+.logout-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* On hover, profile button will show a popup */
+.profile-button:hover {
+  background-color: #e0e0e0;
+}
+.home-icon {
+  font-size: 24px; /* Adjust the font size for the icon */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.home-icon:hover {
+  background-color: #007bff; /* Change background on hover */
+  transform: scale(1.1); /* Slightly enlarge the icon on hover */
+}
+
+.home-icon:active {
+  transform: scale(1); /* Return to normal size when clicked */
+  background-color: #0056b3; /* A darker background color when clicked */
 }

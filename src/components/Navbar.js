@@ -1,11 +1,12 @@
 // src/components/Navbar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../Assets/logo.png';
 import profile from '../Assets/profile.jpg';
 
 const Navbar = () => {
+  const navigate = useNavigate(); // Initialize navigate
   return (
     <nav className="navbar">
       <div className="logo">
@@ -27,7 +28,9 @@ const Navbar = () => {
           <button className="register-button">Register</button>
         </Link>
         <img src={profile} alt="profile" className="profile-image" />
-        <button className="cart-button">Cart</button>
+        <div className="icon" onClick={() => navigate('/cart')}>
+    🛒
+  </div>
       </div>
     </nav>
   );

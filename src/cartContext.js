@@ -42,11 +42,7 @@ export const CartProvider = ({ children }) => {
         name: product.name,
         description: product.description,
         price: product.price,
-        brand: product.brand,
-        category: product.category,
-        color: product.color,
-        size: product.size,
-        image: product.image, // Make sure your product object contains an image property
+       // Make sure your product object contains an image property
         quantity: 1,
       }]);
     }

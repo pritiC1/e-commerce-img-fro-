@@ -7,48 +7,74 @@
 }
 
 /* Product Card Style */
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);  /* 4 columns with equal width */
+  gap: 20px;  /* Space between the images */
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Style for each product card */
 .product-card {
   background-color: #fff;
   border: 1px solid #ddd;
+  padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
   text-align: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.product-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Product Image Styling */
+/* Style for the product images */
 .product-image {
-  max-width: 100%;
-  height: auto;
+  width: 100%;  /* Ensure images take up the full width of the card */
+  height: auto;  /* Maintain aspect ratio */
+  object-fit: contain;  /* Ensure the whole image is visible without cropping */
+  max-height: 300px;  /* Optional: Prevent large images */
   border-radius: 8px;
-  margin-bottom: 10px;
 }
 
-
-/* Product Title */
-.product-card h3 {
-  font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 10px;
-  font-weight: 600;
+/* Optional: Adjust layout for smaller screens (responsive design) */
+@media (max-width: 1024px) {
+  .product-container {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for tablets */
+  }
 }
 
-/* Product Description */
-.product-card p {
-  font-size: 1rem;
-  color: #666;
-  margin-bottom: 5px;
-  line-height: 1.5;
+@media (max-width: 768px) {
+  .product-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .product-container {
+    grid-template-columns: 1fr;  /* 1 column for mobile */
+  }
+}
+/* Style for the product details below the image */
+.product-details {
+  margin-bottom: 15px;
+}
+
+.product-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Add to Cart button style */
+.add-to-cart {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-to-cart:hover {
+  background-color: #0056b3;
 }
 
 /* Product Price */

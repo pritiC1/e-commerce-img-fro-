@@ -1,63 +1,65 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as regularHeart, faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
-import { useCart } from '../cartContext'; // Importing Cart context
 import { Link, useNavigate } from "react-router-dom";
-import HeroSection from './Hero'; // HeroSection on the left
 import { jwtDecode } from 'jwt-decode'; // Correct import for jwtDecode
 import './UserDashboard.css'; // Create a CSS file for styling
 import logo from '../Assets/logo.png';
+import profile from '../Assets/profile.jpg';
 
 
-const Dashboard = () => {
-
+const Dashboard = ( user) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const profileRef = useRef(null); // Ref to track the profile button
+  const popupRef = useRef(null);
   const navigate = useNavigate();
   const [likedProducts, setLikedProducts] = useState([]);
-  const [isSuperuser, setIsSuperuser] = useState(false); // Track if user is superuser
+  const [ setIsSuperuser] = useState(false); // Track if user is superuser
   const [loading, setLoading] = useState(false); // Loading state
-  const [error, setError] = useState(''); // Error state for API requests
-  const { addToCart, cart } = useCart(); // Destructure addToCart and cart
+  const [error, setError] = useState(''); // Error state for API request
   const isAuthenticated = localStorage.getItem('access_token');
   const [products, setProducts] = useState([]);
-  
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    description: '',
-    price: '',
-    image: null, 
-  });
-
-  
-
-   
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
 
 
-  const handleImageChange = (e) => {
-    setNewProduct((prev) => ({
-      ...prev,
-      image: e.target.files[0],
-    }));
-  };
+
+
 
 
   // Function to fetch products from the backend
   const fetchProducts = async () => {
-    setLoading(true); // Set loading to true before fetching
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:8000/api/products/', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,  // Assuming JWT is needed
+        }
       });
-      setProducts(response.data); // Store the fetched products in state
+      if (Array.isArray(response.data)) {
+        setProducts(response.data);
+        // Initialize likedProducts state based on product data (assuming each product has liked_by_user)
+        const liked = {};
+        response.data.forEach(product => {
+          liked[product.id] = product.liked_by_user;  // Track liked status
+        });
+        setLikedProducts(liked);
+      } else {
+        console.error('Error: Response data is not an array', response.data);
+        setProducts([]);  // Handle error
+      }
     } catch (error) {
-      setError('Error in product uploading . Please login again .');
       console.error('Error fetching products:', error);
+      setError('Error fetching products');
     } finally {
-      setLoading(false); // Set loading to false after the fetch is complete
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
 
   // Function to check if user is superuser
   const checkIfSuperuser = () => {
@@ -78,117 +80,85 @@ const Dashboard = () => {
   // Fetch products and check if user is superuser when the component mounts
   useEffect(() => {
     fetchProducts();
-    checkIfSuperuser();
   }, []);
 
 
-  // Handle form submission for uploading new product
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!newProduct.name || !newProduct.price  || !newProduct.description || !newProduct.image) {
-      setError('Please fill in all required fields.');
-      return;
-    }
-    const formData = new FormData();
-    Object.keys(newProduct).forEach((key) => {
-      formData.append(key, newProduct[key]); // Append each field to formData
-    });
-
-    setLoading(true);
-    try {
-      await axios.post('http://localhost:8000/api/products/', formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          'Content-Type': 'multipart/form-data',  // Indicating it's form data
-        },
-      });
-
-      setNewProduct({
-        name: '',
-        description: '',
-        price: '',
-        image: null,
-      }); // Reset form
-      fetchProducts(); // Fetch updated products after uploading
-    } catch (error) {
-      setError('Error uploading product. Please try again.');
-      console.error('Error uploading product:', error);
-    } finally {
-      setLoading(false); // Set loading to false after the form submission
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/Login");
   };
 
-  // Handle product deletion
-  const handleDelete = async (productId) => {
-    try {
-      await axios.delete(`http://localhost:8000/api/products/${productId}/`, { 
-        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}`
-      }
-     });
 
-
-
-      // Update the state to remove the deleted product
-      setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
-    } catch (error) {
-      setError('Error deleting product. Please try again.');
-      console.error('Error deleting product:', error);
-    }
-  };
+  
 
   
 
   const handleLike = async (productId) => {
     try {
-      // Make the API call to like or unlike the product
+      // Send a POST request to toggle the like status
       const response = await axios.post(
-        `http://localhost:8000/api/products/${productId}/like/`, 
-        {}
+        `http://localhost:8000/api/products/${productId}/like/`, {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,  // Authorization header
+          }
+        }
       );
-      
-      // Assuming response.data contains the updated like count and liked status
-      const updatedProduct = response.data;
-  
-      // Update the likedProducts state with the new liked status
-      setLikedProducts((prevLikedProducts) => ({
-        ...prevLikedProducts,
-        [productId]: updatedProduct.liked,  // Toggle like status for the product
-      }));
-  
-      // Update the product list with the new like count and liked status
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product.id === productId
-            ? {
-                ...product,
-                like_count: updatedProduct.like_count,  // Update like count
-                liked: updatedProduct.liked,            // Update liked status
-              }
-            : product
-        )
-      );
-      const updatedLikedProducts = Object.keys(likedProducts).filter(productId => likedProducts[productId]);
-      localStorage.setItem('likedProducts', JSON.stringify(updatedLikedProducts));
 
-      
+      const updatedProduct = response.data;
+
+      setLikedProducts(prevLikedProducts => {
+        const updatedLikedProducts = {
+          ...prevLikedProducts,
+          [productId]: true, // Mark this product as liked
+        };
+
+        // Persist the updated liked products in localStorage
+        localStorage.setItem('likedProducts', JSON.stringify(updatedLikedProducts));
+
+        return updatedLikedProducts;
+      });
+
+      // Update the like count in the products state
+      setProducts(prevProducts => {
+        return prevProducts.map(product => 
+          product.id === productId 
+            ? { ...product, like_count: updatedProduct.like_count }  // Update the like count
+            : product
+        );
+      });
     } catch (error) {
-      setError('Failed to like the product. Please try again later.');
-      console.error('Error liking product:', error);
+      console.error('Error toggling like:', error);
     }
   };
-  
-  // Handle add to cart
-  const handleAddToCart = (product) => {
-    addToCart(product); // Adds product to cart
-    console.log(cart); // Check that cart updates when adding product
-  };
-
-
-
 
   if (checkIfSuperuser) {
     console.log("User is a superuser");
   }
+
+  useEffect(() => {
+    const storedLikes = JSON.parse(localStorage.getItem('likedProducts')) || {};
+    setLikedProducts(storedLikes); // Set initial liked state from localStorage
+  }, []);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    setShowProfilePopup(true); // Show popup when mouse enters
+  };
+
+  // Handle mouse leave
+  const handleMouseLeave = (event) => {
+    // Ensure refs are defined and check if mouse leaves both profile button and popup
+    if (
+      profileRef.current &&
+      popupRef.current &&
+      !profileRef.current.contains(event.relatedTarget) &&
+      !popupRef.current.contains(event.relatedTarget)
+    ) {
+      setIsHovered(false);
+      setShowProfilePopup(false); // Hide popup when mouse leaves both
+    }
+  };
 
 
   return (
@@ -218,70 +188,101 @@ const Dashboard = () => {
             <Link to="/cart">
               <button className="navbar-button">Cart</button>
             </Link>
+
+
             {isAuthenticated ? (
-              <Link to="/login">
-                <button className="login-button">Logout</button>
-              </Link>
-            ) : (
-              <Link to="/login">
-                <button className="login-button">Login</button>
-              </Link>
-            )}
-            
-            
+        <>
+          {/* Profile Button */}
+          <div
+           className={`profile-button ${isHovered ? 'hovered' : ''}`} // Add hovered class conditionally
+            ref={profileRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img
+              src={profile}
+              alt="Profile"
+              className="profile-image"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
+
+          {/* Profile Popup */}
+          {showProfilePopup && (
+            <div
+              className="profile-popup"
+              ref={popupRef}
+              onMouseEnter={handleMouseEnter} // Prevent closing when hovering over the popup
+              onMouseLeave={handleMouseLeave} // Close popup when mouse leaves popup
+            >
+              <div className="popup-content">
+                <h4>Profile</h4>
+                <p>
+                  <strong>Username:</strong> {user.username}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {user.phone_number}
+                </p>
+
+                {/* Order History */}
+                <div>
+                  <h5>Order History</h5>
+                  {user.orders && user.orders.length > 0 ? (
+                    <ul>
+                      {user.orders.map((order, index) => (
+                        <li key={index}>
+                          <span>
+                            Order #{order.id} - {order.status}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No orders yet.</p>
+                  )}
+                </div>
+
+                {/* Logout Button */}
+                <button className="logout-button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        // Login Button for unauthenticated users
+        <Link to="/login">
+          <button className="login-button">Login</button>
+        </Link>
+      )}
           </div>
         </div>
       </nav>
+    
 
       <div className="dashboard-content">
         <div className="hero-section">
-          <HeroSection />
+         
         </div>
-
-        <div className="main-content">
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            value={newProduct.name}
-            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-            placeholder="Product Name"
-            required
-          />
-          <input
-            type="text"
-            name="description"
-            value={newProduct.description}
-            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-            placeholder="Product Description"
-          />
-          <input
-            type="number"
-            name="price"
-            value={newProduct.price}
-            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-            placeholder="Product Price"
-            required
-          />
-          <input
-            type="file"
-            name="image"
-            onChange={handleImageChange}
-            required
-          />
-          <button type="submit">{loading ? 'Uploading...' : 'Upload Product'}</button>
-        </form>
-
-        
           {error && <p className="error">{error}</p>}
-
-          <h3>Uploaded Products</h3>
           {loading ? (
             <p>Loading products...</p>
           ) : (
             <div className="product-list">
               {products.map((product) => (
-                <div className="product-item" key={product.id}>
+                <div
+                className="product-item"
+                key={product.id}
+                onClick={() => navigate(`/product/${product.id}`)} // Navigate to ProductDetail page
+                style={{ cursor: 'pointer' }} // Make the product card clickable
+              >
                   <img
                     src={product.image_url} // Ensure this URL is correct
                     alt={product.name}
@@ -292,32 +293,26 @@ const Dashboard = () => {
                   <p>Price: ${product.price}</p>
 
                   <div className="like-container">
-                    <FontAwesomeIcon
-                      icon={likedProducts[product.id] ? solidHeart : regularHeart}
-                      style={{
-                        color: likedProducts[product.id] ? 'red' : 'grey',
-                        cursor: 'pointer',
-                        fontSize: '24px',
-                      }}
-                      onClick={() => handleLike(product.id)}
-                    />
-                  </div>
-                  {/* Hover Message When Product is Liked */}
-                  {likedProducts[product.id] && (
-                    <div className="liked-notification">Product Liked</div>
-                  )}
-
-                  <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
-                  {isSuperuser && (
-                    <button onClick={() => handleDelete(product.id)}>Delete Product</button>
-                  )}
+                  <FontAwesomeIcon
+                    icon={likedProducts[product.id] ? solidHeart : regularHeart}
+                    style={{
+                      color: likedProducts[product.id] ? 'red' : 'grey',
+                      cursor: 'pointer',
+                      fontSize: '24px',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent navigating to the product detail page
+                      handleLike(product.id);
+                    }}
+                  />
+                  <span>{product.like_count} likes</span>
                 </div>
+                  </div>
               ))}
             </div>
           )}
         </div>
       </div>
-    </div>
   );
 };
 

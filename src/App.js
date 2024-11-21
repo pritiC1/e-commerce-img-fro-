@@ -16,6 +16,7 @@ import Cart from './components/Cart';
 import LikedProducts from './components/LikedProducts';
 import './App.css';
 import Superuserdashboard from './components/Superuserdashboard';
+import ProductDetail from './components/productDetail';
 
 function App() {
   return (
@@ -37,7 +38,7 @@ function App() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/productupdate/:productId" element={<ProductEditForm />} /> {/* Route to update product */}
           <Route path="/productDelete/:productId" element={<ProductDelete />} /> {/* Route to delete product */}
-
+          <Route path="/product/:id" element={<ProductDetail />} />
           {/* User profile and dashboard */}
           <Route path="/profile" element={<Profile />} />
           <Route path="/userdashboard" element={<UserDashboard />} />

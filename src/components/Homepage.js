@@ -6,25 +6,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as regularHeart } from '@fortawesome/free-regular-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import './ProductList.css';
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
+  const [nextPageUrl, setNextPageUrl] = useState(null);
   const navigate = useNavigate();
 
   // Function to fetch products
   const fetchProducts = async () => {
     try {
-      // Check if the user is logged in
-      const accessToken = localStorage.getItem("access_token");
-      const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
-
-      const response = await axios.get('http://localhost:8000/api/products/', {
-        headers,
-      });
-
-      setProducts(response.data);  // Set the products state to the fetched data
+      const response = await axios.get('http://localhost:8000/api/public-products/');
+      
+      // Ensure response data contains products as an array
+      if (Array.isArray(response.data.products)) {
+        setProducts(response.data.products);  // Set products only if it's an array
+      } else {
+        console.error('Products data is not an array:', response.data.products);
+        setProducts([]);  // Set an empty array as a fallback
+      }
+  
+      setNextPageUrl(response.data.next);  // Set the pagination link
     } catch (error) {
       console.error('Error fetching products:', error);
+      setProducts([]);  // Set an empty array in case of error
     }
   };
 
@@ -41,46 +46,57 @@ const HomePage = () => {
     }
   };
 
+  const handleLoadMore = () => {
+    if (nextPageUrl) {
+      fetchProducts(nextPageUrl);  // Fetch the next page if available
+    }
+  };
+
   // Function to handle Heart button click (like functionality)
   const handleLike = async (productId, liked) => {
-    if (!localStorage.getItem("access_token")) {
+    const token = localStorage.getItem("access_token");
+  
+    if (!token) {
       alert('Please log in or register to like products.');
-      navigate('/login');
-    } else {
-      // Optimistic UI update: update the like state locally first
-      const updatedProducts = products.map((product) =>
-        product.id === productId
-          ? {
-              ...product,
-              liked: !liked,
-              like_count: liked ? product.like_count - 1 : product.like_count + 1,
-            }
-          : product
-      );
-      setProducts(updatedProducts);
-
-  try {
-    await axios.post(
-      `http://localhost:8000/api/products/${productId}/like/`, 
-      {}, 
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }
-    );
-  } catch (error) {
-    console.error('Error updating like:', error);
-    // If API call fails, revert the like state
-    const revertProducts = products.map((product) =>
+      navigate('/Login');
+      return;  // Exit the function if no token
+    }
+  
+    // Optimistic UI update
+    const updatedProducts = products.map((product) =>
       product.id === productId
-        ? { ...product, liked: liked, like_count: liked ? product.like_count + 1 : product.like_count - 1 }
+        ? {
+            ...product,
+            liked: !liked,
+            like_count: liked ? product.like_count - 1 : product.like_count + 1,
+          }
         : product
     );
-    setProducts(revertProducts);
-  }
-}
-};
+    setProducts(updatedProducts);
+  
+    try {
+      await axios.post(
+        `http://localhost:8000/api/products/${productId}/like/`, // Correct API endpoint
+        {},  // Empty body since we are just liking
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Make sure token is passed correctly
+          },
+        }
+      );
+    } catch (error) {
+      console.error('Error updating like:', error);
+      // Revert optimistic UI changes on error
+      const revertProducts = products.map((product) =>
+        product.id === productId
+          ? { ...product, liked: liked, like_count: liked ? product.like_count + 1 : product.like_count - 1 }
+          : product
+      );
+      setProducts(revertProducts);
+    }
+  };
+  
+  
 
   
   useEffect(() => {
@@ -89,7 +105,19 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
+      
       <Navbar />
+
+       {/* Banner Section */}
+      <div className="banner">
+        <img src="banner1.jpg" alt="Banner" className="banner-image" />
+        <div className="banner-content">
+        </div>
+      </div>
+
+
+
+      
       <h2>Our Products</h2>
       <div className="product-list">
         {products.map((product) => (
@@ -106,6 +134,13 @@ const HomePage = () => {
           <div className="product-actions">
             {/* Add to Cart button */}
             <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
+
+             {/* Load More button if there's a next page */}
+              {nextPageUrl && (
+                <button className="load-more" onClick={handleLoadMore}>
+                  Load More
+                </button>
+              )}
             {/* Heart button for liking */}
             <div className="like-container">
               <FontAwesomeIcon

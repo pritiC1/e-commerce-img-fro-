@@ -10,8 +10,8 @@ import './ProductList.css';
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [nextPageUrl, setNextPageUrl] = useState(null);  // To track the next page URL for pagination
+  const [previousPageUrl, setPreviousPageUrl] = useState(null);  // To track the previous page URL
   const { addToCart } = useCart(); // Get addToCart from context
-
 
 
   const fetchProducts = async (url) => {
@@ -24,6 +24,7 @@ const ProductList = () => {
 
       setProducts((prevProducts) => [...prevProducts, ...response.data.products]);
       setNextPageUrl(response.data.next);  // Set the next page URL
+      setPreviousPageUrl(response.data.previous);  // Set the previous page URL
     } catch (err) {
       console.error('Error fetching products:', err);
       if (err.response && err.response.status === 401) {
@@ -60,6 +61,13 @@ const ProductList = () => {
       fetchProducts(nextPageUrl);  // Fetch next page of products
     }
   };
+
+  const handleLoadPrevious = () => {
+    if (previousPageUrl) {
+      fetchProducts(previousPageUrl);  // Fetch the previous page of products
+    }
+  };
+
 
 
   const handleAddToCart = (product) => {
@@ -157,6 +165,13 @@ const ProductList = () => {
        {nextPageUrl && (
         <button className="load-more" onClick={handleLoadMore}>
           Load More
+        </button>
+      )}
+
+      {/* Add a "Load Previous" button if there is a previous page */}
+      {previousPageUrl && (
+        <button className="load-more" onClick={handleLoadPrevious}>
+          Load Previous
         </button>
       )}
     </div>
