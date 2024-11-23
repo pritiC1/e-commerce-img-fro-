@@ -1,181 +1,316 @@
-/* Superuser Dashboard Navbar */
-.superuser-navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .navbar-content h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .navbar-buttons {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .navbar-button,
-  .login-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .navbar-button:hover,
-  .login-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Upload Form */
-  .upload-form {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 500px;
-  }
-  
-  .upload-form h3 {
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-    color: #333;
-  }
-  
-  .upload-form form input[type="text"],
-  .upload-form form input[type="number"],
-  .upload-form form input[type="file"],
-  .upload-form form button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 1rem;
-  }
-  
-  .upload-form form input,
-  .upload-form form button {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .upload-form form button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .upload-form form button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Product List */
-  .product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .product-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    width: 250px;
-    text-align: center;
-  }
-  
-  .product-item img {
-    max-width: 100%;
-    border-radius: 8px;
-  }
-  
-  .product-item h4 {
-    font-size: 1.2rem;
-    color: #333;
-    margin: 10px 0;
-  }
-  
-  .product-item p {
-    font-size: 0.9rem;
-    color: #555;
-  }
-  
-  .product-item button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-  
-  .product-item button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Like Container */
-  .like-container {
-    margin-top: 10px;
-  }
-  
-  .like-container .liked-notification {
-    color: green;
-    font-size: 0.9rem;
-    margin-top: 5px;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .navbar-buttons {
-      flex-direction: column;
-      gap: 5px;
-    }
-  
-    .product-list {
-      flex-direction: column;
-      align-items: center;
-    }
-  }
-  .liked-notification {
-    position: absolute;
-    top: 10px; /* Position it where you want */
-    right: 10px; 
-    background-color: green;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 1000;
-    animation: fadeOut 3s forwards;
-  }
-  
-  @keyframes fadeOut {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-  .auth-buttons .profile-image {
-  width: 40px;
-  height: 40px;
+/* Global Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+/* Sidebar */
+.vertical-sidebar {
+  width: 250px;
+  background-color: #9e79ef; /* Faint purple color */
+  color: white;
+  height: 100vh; /* Full viewport height */
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 10px;
+  box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.sidebar-header {
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #fff;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.sidebar-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+.profile-image {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
+  margin-bottom: 10px;
+  border: 4px solid #fff; /* White border for profile image */
+}
+
+.profile-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.sidebar-menu-item {
+  background-color: #d1c4e9; /* Lighter purple for menu items */
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 1rem;
+  text-align: center;
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-family: 'Arial', sans-serif;
+}
+
+.sidebar-menu-item:hover {
+  background-color: #9a75da; /* Slightly darker purple for hover */
+  color: #fff;
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+/* Main Content */
+.dashboard-content {
+  margin-left: 250px; /* Offset for the sidebar */
+  padding: 20px;
+  height: 100vh; /* Full height of the screen */
+  overflow-y: auto;
+  background-color: #fafafa;
+  transition: filter 0.3s ease-in-out; /* Transition for blur effect */
+}
+.dashboard-content.blurred {
+  filter: blur(5px); /* Apply blur effect when the form is open */
+}
+.upload-form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: flex-start; /* Align form to the left (sidebar) */
+  align-items: center;
+  z-index: 1000; /* Ensure it's above all content */
+}
+.upload-modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 228px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  margin-top: 60px;
+}
+
+.upload-modal-content input {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.upload-modal-content button {
+  padding: 8px 16px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+/* Modal Button Styles */
+.upload-modal-content button:hover {
+  background-color: #9a75da;
+  color: white;
+}
+
+.upload-modal-content button:disabled {
+  background-color: #d1c4e9;
+  cursor: not-allowed;
+}
+.dashboard-content form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 1rem;
+  color: #333;
+  transition: border 0.3s ease;
+}
+
+.dashboard-content form input:focus {
+  border-color: #9575cd; /* Focus border color to match sidebar */
+  outline: none;
+}
+
+/* Form Buttons */
+.dashboard-content form button {
+  background-color: #9575cd; /* Soft purple background */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.dashboard-content form button:hover {
+  background-color: #7e57c2; /* Darker purple on hover */
+  transform: scale(1.05); /* Zoom effect on hover */
+}
+
+.dashboard-content form button:disabled {
+  background-color: #d1c4e9; /* Disabled button color */
+  cursor: not-allowed;
+}
+.product-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.product-item {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  width: 250px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.product-item img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.product-item h4 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 10px 0;
+}
+
+.product-item p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.product-item:hover {
+  transform: translateY(-5px); /* Slight hover effect for the product items */
+}
+
+.product-item button {
+  background-color: #7d4ecf; /* Matching soft purple for buttons */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.product-item button:hover {
+  background-color: #a757c2; /* Darker purple for button hover */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
+/* Styling the Footer or any other section if necessary */
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #b8a9d9;
+  color: #fff;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+.sidebar-menu-item.logout-button {
+  background-color: #9575cd; /* Same soft purple as other buttons */
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+.sidebar-menu-item.logout-button:hover {
+  background-color: #7e57c2; /* Darker purple for hover effect */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+.product-edit-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.product-edit-form h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.product-edit-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-edit-form form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+.product-edit-form form button {
+  background-color: #9575cd; /* Purple button */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.product-edit-form form button:hover {
+  background-color: #7e57c2; /* Darker purple on hover */
+  transform: scale(1.05);
+}
+
+.product-edit-form form button:disabled {
+  background-color: #d1c4e9;
+  cursor: not-allowed;
+}
+
+.product-edit-form form button:nth-child(2) {
+  background-color: #e74c3c; /* Red for 'Close' button */
+}
+
+.product-edit-form form button:nth-child(2):hover {
+  background-color: #c0392b; /* Darker red on hover */
 }

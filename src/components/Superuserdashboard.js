@@ -7,6 +7,68 @@ import { Link } from 'react-router-dom';
 import './Superuserdashboard.css';
 import { ToastContainer,toast } from 'react-toastify';// Import Toastify
 import 'react-toastify/dist/ReactToastify.css';
+import profile from '../Assets/profile.jpg';
+
+// Axios instance with interceptors
+const api = axios.create({
+  baseURL: 'http://localhost:8000/api/', // Your API base URL
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Refresh token function
+const refreshToken = async () => {
+  const refreshToken = localStorage.getItem('refresh_token'); // Assuming you saved it to localStorage
+
+  if (!refreshToken) {
+    throw new Error('No refresh token found');
+  }
+
+  try {
+    const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+      refresh: refreshToken, // Send the refresh token to get a new access token
+    });
+
+    const { access } = response.data;
+    localStorage.setItem('access_token', access); // Save the new access token
+    return access; // Return the new access token
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    throw new Error('Token refresh failed');
+  }
+};
+
+// Add an interceptor to handle token expiration
+api.interceptors.response.use(
+  (response) => response, // Just return the response if no error
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Check if the error is due to an expired token (401 Unauthorized)
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // Prevent an infinite loop of retries
+      try {
+        // Try to refresh the token
+        const newAccessToken = await refreshToken();
+
+        // Update the original request with the new access token
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+        // Retry the original request with the new token
+        return api(originalRequest);
+      } catch (err) {
+        console.error('Error refreshing token:', err);
+        // Handle failed token refresh, maybe redirect to login
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+    }
+
+    return Promise.reject(error); // If it's not a 401 error or refresh fails, reject the promise
+  }
+);
+
 
 const SuperUserDashboard = () => {
   const [isSuperuser, setIsSuperuser] = useState(false);
@@ -17,6 +79,11 @@ const SuperUserDashboard = () => {
   const [error, setError] = useState(null);
   const [ setSuccessMessage] = useState(null);
   const [productNotifications, setProductNotifications] = useState({});
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [profileImage, setProfileImage] = useState(profile); // Default profile image
+  const [showProfileUpload, setShowProfileUpload] = useState(false); // To show the upload form
+  const [newProfileImage, setNewProfileImage] = useState(null); // The new profile image selected by the user
+  const [loadingImage, setLoadingImage] = useState(false); // To show loading state while uploading
 
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -127,7 +194,43 @@ const SuperUserDashboard = () => {
     }, 3000); // 3 seconds timeout
   };
   
+  const handleProfileImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewProfileImage(file);
+    }
+  };
 
+  const handleProfileImageUpload = async () => {
+    if (!newProfileImage) {
+      alert("Please select an image to upload.");
+      return;
+    }
+  
+    setLoadingImage(true);
+    const formData = new FormData();
+    formData.append('image', newProfileImage);
+  
+    try {
+      const response = await axios.put('http://localhost:8000/api/user/upload-profile/', formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      setProfileImage(response.data.image_url); // Update the profile image URL
+      setShowProfileUpload(false); // Close the upload modal/form
+      setNewProfileImage(null); // Reset the new profile image state
+      setLoadingImage(false); // Hide the loading state
+      notify("Profile image updated successfully", 'success');
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      setLoadingImage(false); // Hide the loading state
+      notify("Failed to upload profile image", 'error');
+    }
+  };
+  
 
   // Handle product delete
   const handleDelete = async (productId) => {
@@ -136,10 +239,28 @@ const SuperUserDashboard = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
       });
       setProducts((prevProducts) => prevProducts.filter((product) => product.id !== productId));
-    } catch (error) {
+      toast.success('Product Deleted');
+
+      // Optionally, add a custom notification timeout logic, similar to what you have for the "Like" function
+      setProductNotifications((prevNotifications) => ({
+          ...prevNotifications,
+          [productId]: 'Product Deleted',
+      }));
+
+      // Hide the notification after 3 seconds
+      setTimeout(() => {
+          setProductNotifications((prevNotifications) => {
+              const newNotifications = { ...prevNotifications };
+              delete newNotifications[productId]; // Remove the notification for the deleted product
+              return newNotifications;
+          });
+      }, 3000); // 3 seconds timeout
+
+  } catch (error) {
       console.error('Error deleting product:', error);
-    }
-  };
+      toast.error('Error deleting product'); // Show an error notification if something goes wrong
+  }
+};
 
   // Handle product selection for editing
   const handleEdit = (product) => {
@@ -150,9 +271,12 @@ const SuperUserDashboard = () => {
       price: product.price,
       image: null,
     });
-    setShowUploadForm(true);
+    setShowUploadForm(false);
+    setShowEditForm(true);
   };
-
+  const handleCloseForm = () => {
+    setShowEditForm(false); // Close the edit form
+};
   // Handle product update (submit the form)
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -206,7 +330,9 @@ const SuperUserDashboard = () => {
   return (
     <div>
       <ToastContainer />
-      <nav className="superuser-navbar">
+
+      
+      {/* <nav className="superuser-navbar">
         <div className="navbar-content">
           <h2>Superuser Dashboard</h2>
           <div className="navbar-buttons">
@@ -219,19 +345,83 @@ const SuperUserDashboard = () => {
             </Link>
 
             <button
-              className="navbar-button"
-              onClick={() => setShowUploadForm(!showUploadForm)}
-            >
-              {showUploadForm ? 'Close Form' : 'Upload Product'}
-            </button>
-
-            <Link to="/">
+            className="navbar-button"
+            onClick={() => {
+              setShowUploadForm(!showUploadForm);
+              setSelectedProduct(null); // Clear selected product when toggling upload form
+            }}
+          >
+            {showUploadForm ? 'Close Form' : 'Upload Product'}
+          </button>
+          <img src={profile} alt="profile" className="profile-image" />
+            <Link to="/login">
               <button className="login-button">Logout</button>
             </Link>
-            
+           
           </div>
         </div>
-      </nav>
+      </nav> */}
+
+      {/* Sidebar */}
+      <aside className="vertical-sidebar">
+        <div className="sidebar-profile">
+        <div className="profile-image-container">
+          <img
+            src={profileImage}  // The current profile image
+            alt="Profile"
+            className="profile-image"
+            onClick={() => setShowProfileUpload(true)} // Clicking on the image will open the upload form
+          />
+        </div>
+          <p className="profile-name">Priti</p>
+        </div>
+
+        {/* Profile Image Upload Modal */}
+  {showProfileUpload && (
+    <div className="upload-modal">
+      <div className="upload-modal-content">
+        <h3>Upload New Profile Image</h3>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleProfileImageChange}
+        />
+        {loadingImage ? (
+          <button disabled>Uploading...</button>
+        ) : (
+          <button onClick={handleProfileImageUpload}>Upload</button>
+        )}
+        <button onClick={() => setShowProfileUpload(false)}>Cancel</button>
+      </div>
+    </div>
+  )}
+
+
+
+
+        <div className="sidebar-menu">
+          <Link to="/" className="sidebar-menu-item">
+            Home
+          </Link>
+          <button
+            className="sidebar-menu-item"
+            onClick={() => {
+              setShowUploadForm(!showUploadForm);
+              setSelectedProduct(null); // Clear selected product when toggling upload form
+            }}
+          >
+            {showUploadForm ? "Close Form" : "Upload Product"}
+          </button>
+          <Link to="/orders" className="sidebar-menu-item">
+            Orders
+          </Link>
+           <Link to="/login">
+              <button className="login-button">Logout</button>
+            </Link>
+        </div>
+      </aside>
+      
+      
       <div className="dashboard-content">
 
         <div className="main-content">
@@ -270,7 +460,43 @@ const SuperUserDashboard = () => {
             </form>
           )}
 
-          <h3>Uploaded Products</h3>
+
+           {/* Product Edit Form */}
+           {showEditForm && (
+            <div className="product-edit-form">
+              <h3>Edit Product</h3>
+              <form onSubmit={handleUpdate}>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Product Name"
+                  required
+                />
+                <input
+                  type="text"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
+                  placeholder="Product Description"
+                  required
+                />
+                <input
+                  type="number"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="Product Price"
+                  required
+                />
+                <input type="file" onChange={handleImageChange} />
+                <button type="submit">Update Product</button>
+                <button onClick={handleCloseForm}>Close</button>
+              </form>
+            </div>
+          )}
+
+          
           {error && <div className="error-message">{error}</div>} {/* Display error message */}
           {loading ? (
             <p>Loading products...</p>
@@ -316,39 +542,7 @@ const SuperUserDashboard = () => {
             </div>
           )}
 
-          {/* Product Edit Form */}
-          {selectedProduct && (
-            <div className="product-edit-form">
-              <h3>Edit Product</h3>
-              <form onSubmit={handleUpdate}>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Product Name"
-                  required
-                />
-                <input
-                  type="text"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  placeholder="Product Description"
-                  required
-                />
-                <input
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  placeholder="Product Price"
-                  required
-                />
-                <input type="file" onChange={handleImageChange} />
-                <button type="submit">Update Product</button>
-              </form>
-            </div>
-          )}
+         
         </div>
       </div>
     </div>

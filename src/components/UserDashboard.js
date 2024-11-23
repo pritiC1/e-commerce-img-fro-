@@ -7,6 +7,7 @@ import { jwtDecode } from 'jwt-decode'; // Correct import for jwtDecode
 import './UserDashboard.css'; // Create a CSS file for styling
 import logo from '../Assets/logo.png';
 import profile from '../Assets/profile.jpg';
+import ShareButton from './Sharebutton';
 
 
 const Dashboard = ( user) => {
@@ -268,7 +269,7 @@ const Dashboard = ( user) => {
     
 
       <div className="dashboard-content">
-        <div className="hero-section">
+        
          
         </div>
           {error && <p className="error">{error}</p>}
@@ -306,13 +307,17 @@ const Dashboard = ( user) => {
                     }}
                   />
                   <span>{product.like_count} likes</span>
-                </div>
                   </div>
+                {/* Add ShareButton */}
+                <ShareButton productUrl={`http://127.0.0.1:8000/app/products/${product.id}`} />
+              </div>
+                
+                  
               ))}
             </div>
           )}
         </div>
-      </div>
+      
   );
 };
 

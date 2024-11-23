@@ -17,11 +17,14 @@ import LikedProducts from './components/LikedProducts';
 import './App.css';
 import Superuserdashboard from './components/Superuserdashboard';
 import ProductDetail from './components/productDetail';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <Router>
-      <CartProvider> 
+      <CartProvider>
+      <ToastContainer />
       <div className="App">
         <Routes>
           {/* Default route for the homepage */}

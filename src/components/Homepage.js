@@ -112,6 +112,7 @@ const HomePage = () => {
       <div className="banner">
         <img src="banner1.jpg" alt="Banner" className="banner-image" />
         <div className="banner-content">
+          <button onClick={() => navigate('/shop')} className="shop-now-button">Shop Now</button>
         </div>
       </div>
 
