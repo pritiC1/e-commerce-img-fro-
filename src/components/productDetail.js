@@ -77,32 +77,39 @@ const ProductDetail = () => {
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
-        toast.error('Please select a size before adding to the cart.');
-        return;
+      toast.error('Please select a size before adding to the cart.');
+      return;
     }
+  
     try {
-        const response = await axiosInstance.post(
-            "http://localhost:8000/cart/add/",
-            { 
-                product_id: product.id,
-                quantity: 1,
-                size: selectedSize
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("access_token")}`
-                }
-            }
-        );
-
+      const response = await axios.post(
+        "http://localhost:8000/api/cart/add/",
+        {
+          product_id: product.id,
+          quantity: 1,
+          size: selectedSize, // Include size in the request payload
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+  
+      // Handle success response
+      if (response.status === 201 && response.data && response.data.cart) {
         toast.success('Product added to cart successfully!');
-        updateCart(response.data.cart);  // Update the cart context with the new cart data
+        updateCart(response.data.cart); // Update the cart in your frontend
+      } else {
+        throw new Error('Unexpected response from server');
+      }
     } catch (error) {
-        console.error("Error adding product to cart:", error);
-        toast.error('Failed to add product to cart.');
+      console.error("Error adding product to cart:", error.response?.data || error.message);
+      toast.error('Failed to add product to cart.');
     }
-};
-
+  };
+  
+  
   const handleBuyNow = () => {
     if (!selectedSize) {
       toast.error('Please select a size before proceeding.');
@@ -124,8 +131,11 @@ const ProductDetail = () => {
           <div className="left-section">
             <img src={product.image_url} alt={product.name} className="product-image" />
             <div className="product-buttons">
-              <button onClick={handleAddToCart} className="add-to-cart-btn">Add to Cart</button>
-              <button onClick={handleBuyNow} className="buy-now-btn">Buy Now</button>
+            <button onClick={handleAddToCart} className="add-to-cart-btn">
+              Add to Cart
+            </button>
+
+            <button onClick={handleBuyNow} className="buy-now-btn">Buy Now</button>
             </div>
           </div>
 

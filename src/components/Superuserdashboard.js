@@ -328,7 +328,8 @@ const SuperUserDashboard = () => {
   };
 
   return (
-    <div>
+    <div className="superuser-dashboard">
+      
       <ToastContainer />
 
       

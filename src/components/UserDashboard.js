@@ -96,43 +96,36 @@ const Dashboard = ( user) => {
 
   const handleLike = async (productId) => {
     try {
-      // Send a POST request to toggle the like status
+      const token = localStorage.getItem('access_token');
       const response = await axios.post(
-        `http://localhost:8000/api/products/${productId}/like/`, {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,  // Authorization header
-          }
-        }
+        `http://localhost:8000/api/products/${productId}/like/`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       const updatedProduct = response.data;
 
-      setLikedProducts(prevLikedProducts => {
-        const updatedLikedProducts = {
-          ...prevLikedProducts,
-          [productId]: true, // Mark this product as liked
-        };
-
-        // Persist the updated liked products in localStorage
-        localStorage.setItem('likedProducts', JSON.stringify(updatedLikedProducts));
-
-        return updatedLikedProducts;
+      // Refetch liked products to ensure state is in sync with the backend
+      const likedProductsResponse = await axios.get('http://localhost:8000/api/liked-products/', {
+        headers: { Authorization: `Bearer ${token}` },
       });
+      setLikedProducts(likedProductsResponse.data || []);
 
-      // Update the like count in the products state
-      setProducts(prevProducts => {
-        return prevProducts.map(product => 
-          product.id === productId 
-            ? { ...product, like_count: updatedProduct.like_count }  // Update the like count
+      // Update the products list
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === productId
+            ? { ...product, is_liked: updatedProduct.is_liked, like_count: updatedProduct.like_count }
             : product
-        );
-      });
+        )
+      );
     } catch (error) {
       console.error('Error toggling like:', error);
     }
   };
 
+
+  
   if (checkIfSuperuser) {
     console.log("User is a superuser");
   }
@@ -149,18 +142,20 @@ const Dashboard = ( user) => {
 
   // Handle mouse leave
   const handleMouseLeave = (event) => {
-    // Ensure refs are defined and check if mouse leaves both profile button and popup
+    const isNode = (node) => node instanceof Node; // Utility to check if value is a Node
+  
+    // Ensure refs and relatedTarget are valid nodes
     if (
       profileRef.current &&
       popupRef.current &&
+      isNode(event.relatedTarget) &&
       !profileRef.current.contains(event.relatedTarget) &&
       !popupRef.current.contains(event.relatedTarget)
     ) {
       setIsHovered(false);
-      setShowProfilePopup(false); // Hide popup when mouse leaves both
+      setShowProfilePopup(false);
     }
   };
-
 
   return (
     <div className="dashboard">

@@ -10,7 +10,6 @@ import './ProductList.css';
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
-  const [nextPageUrl, setNextPageUrl] = useState(null);
   const navigate = useNavigate();
 
   // Function to fetch products
@@ -25,14 +24,11 @@ const HomePage = () => {
         console.error('Products data is not an array:', response.data.products);
         setProducts([]);  // Set an empty array as a fallback
       }
-  
-      setNextPageUrl(response.data.next);  // Set the pagination link
     } catch (error) {
       console.error('Error fetching products:', error);
       setProducts([]);  // Set an empty array in case of error
     }
   };
-
   
   // Function to handle Add to Cart button click
   const handleAddToCart = () => {
@@ -46,11 +42,7 @@ const HomePage = () => {
     }
   };
 
-  const handleLoadMore = () => {
-    if (nextPageUrl) {
-      fetchProducts(nextPageUrl);  // Fetch the next page if available
-    }
-  };
+ 
 
   // Function to handle Heart button click (like functionality)
   const handleLike = async (productId, liked) => {
@@ -136,12 +128,6 @@ const HomePage = () => {
             {/* Add to Cart button */}
             <button className="add-to-cart" onClick={handleAddToCart}>Add to Cart</button>
 
-             {/* Load More button if there's a next page */}
-              {nextPageUrl && (
-                <button className="load-more" onClick={handleLoadMore}>
-                  Load More
-                </button>
-              )}
             {/* Heart button for liking */}
             <div className="like-container">
               <FontAwesomeIcon

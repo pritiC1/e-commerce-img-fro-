@@ -1,5 +1,5 @@
 // src/components/ProductList.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as solidHeart } from '@fortawesome/free-solid-svg-icons';
@@ -9,12 +9,12 @@ import './ProductList.css';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [nextPageUrl, setNextPageUrl] = useState(null);  // To track the next page URL for pagination
-  const [previousPageUrl, setPreviousPageUrl] = useState(null);  // To track the previous page URL
+  const [nextPageUrl, setNextPageUrl] = useState(null); // To track the next page URL for pagination
+  const [previousPageUrl, setPreviousPageUrl] = useState(null); // To track the previous page URL
+  const [currentPage, setCurrentPage] = useState(1); // To track the current page
   const { addToCart } = useCart(); // Get addToCart from context
 
-
-  const fetchProducts = async (url) => {
+  const fetchProducts =useCallback(async (url) => {
     try {
       const response = await axios.get(url, {
         headers: {
@@ -22,51 +22,25 @@ const ProductList = () => {
         },
       });
 
-      setProducts((prevProducts) => [...prevProducts, ...response.data.products]);
-      setNextPageUrl(response.data.next);  // Set the next page URL
-      setPreviousPageUrl(response.data.previous);  // Set the previous page URL
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      if (err.response && err.response.status === 401) {
-        refreshToken(); // Call the refresh token function
-      }
-    }
-  };
+       // Log the API response for debugging
+       console.log('API Response:', response.data);
 
-  useEffect(() => {
-    const fetchProducts = async (url) => {
-      try {
-        const response = await axios.get(url, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-  
-        console.log('API Response:', response.data); // Log the response
-      setProducts((prevProducts) => [...prevProducts, ...response.data.products]);
-      setNextPageUrl(response.data.next);  // Set the next page URL
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      if (err.response && err.response.status === 401) {
-        refreshToken(); // Call the refresh token function
-      }
-    }
-  };
+       // Update product state
+       setProducts(response.data.products);
+       setNextPageUrl(response.data.next); // Update the next page URL
+       setPreviousPageUrl(response.data.previous); // Update the previous page URL
+     } catch (err) {
+       console.error('Error fetching products:', err);
+       if (err.response && err.response.status === 401) {
+         refreshToken(); // Call the refresh token function
+       }
+     }
+    }, []);
 
-    fetchProducts('http://127.0.0.1:8000/api/products/');
-  }, []);  // Empty dependency array means this runs only once on component mount
-  
-  const handleLoadMore = () => {
-    if (nextPageUrl) {
-      fetchProducts(nextPageUrl);  // Fetch next page of products
-    }
-  };
-
-  const handleLoadPrevious = () => {
-    if (previousPageUrl) {
-      fetchProducts(previousPageUrl);  // Fetch the previous page of products
-    }
-  };
+    
+   useEffect(() => {
+    fetchProducts(`http://127.0.0.1:8000/api/products/?page=${currentPage}`);
+  }, [currentPage, fetchProducts]); // Add fetchProducts to dependency array
 
 
 
@@ -162,19 +136,27 @@ const ProductList = () => {
         </div>
       ))}
        {/* Add a "Load More" button if there is a next page */}
-       {nextPageUrl && (
-        <button className="load-more" onClick={handleLoadMore}>
-          Load More
-        </button>
-      )}
-
-      {/* Add a "Load Previous" button if there is a previous page */}
-      {previousPageUrl && (
-        <button className="load-more" onClick={handleLoadPrevious}>
-          Load Previous
-        </button>
-      )}
+       <div className="pagination">
+        {previousPageUrl && (
+          <button
+            className="pagination-button"
+            onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+          >
+            Previous
+          </button>
+        )}
+        <span className="current-page">Page {currentPage}</span>
+        {nextPageUrl && (
+          <button
+            className="pagination-button"
+            onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+          >
+            Next
+          </button>
+        )}
+      </div>
     </div>
   );
 };
+
 export default ProductList;
