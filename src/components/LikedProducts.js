@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './LikedProducts.css';
+import styles from './LikedProducts.module.css';
+import Navbar from './Navbar';
 
 const LikedProducts = () => {
   const [likedProducts, setLikedProducts] = useState([]);
@@ -46,48 +47,46 @@ const LikedProducts = () => {
 
 
   return (
-    <div>
-      <h1>Liked Products</h1>
 
-      {/* Display error or success messages */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {message && <p>{message}</p>}
 
-      {/* Show loading spinner while data is being fetched */}
-      {loading ? (
-        <p>Loading liked products...</p>
-      ) : Array.isArray(likedProducts) && likedProducts.length > 0 ? (
-        <div className="product-list">
-          {likedProducts.map((product) => (
-            <div
-              key={product.id}
-              className="product-card"
-              onClick={() => handleProductClick(product.id)}
-              style={{ cursor: 'pointer' }} // Ensures a pointer cursor
-            >
-              {/* Display Image */}
-              <img
-                src={`http://127.0.0.1:8000${product.image_url}`} // Prepend base URL for the image
-                alt={product.name}
-                className="product-image"
-                onError={(e) => (e.target.src = '/default-image.png')} // Fallback image on error
-              />
-              <h4>{product.name}</h4>
-              <p>{product.description}</p>
-              <p>Price: ${product.price}</p>
 
-              {/* Add to Cart Button */}
-              <button onClick={(e) => { e.stopPropagation(); handleAddToCart(product.id); }} className="add-to-cart-btn">
-                Add to Cart
-              </button>
-            </div>
-          ))}
+    
+    <div className={styles.likedProductsWrapper}>
+          <Navbar />
+  {error && <p className={styles.errorMessage}>{error}</p>}
+  {message && <p className={styles.successMessage}>{message}</p>}
+  {loading ? (
+    <p className={styles.loading}>Loading liked products...</p>
+  ) : (
+    <div className={styles.productList}>
+      {likedProducts.map((product) => (
+        <div
+          key={product.id}
+          className={styles.productCard}
+          onClick={() => handleProductClick(product.id)}
+        >
+          <img
+            src={`http://127.0.0.1:8000${product.image_url}`}
+            alt={product.name}
+            className={styles.productImage}
+            onError={(e) => (e.target.src = '/default-image.png')}
+          />
+          <h4>{product.name}</h4>
+          <p>{product.description}</p>
+          <p>Price: {product.price}</p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart(product.id);
+            }}
+            className={styles.addToCartBtn}
+          >
+            Add to Cart
+          </button>
         </div>
-      ) : (
-        <p>No liked products yet.</p>
-      )}
+      ))}
     </div>
-  );
-};
-
+  )}
+</div>
+  )};
 export default LikedProducts;

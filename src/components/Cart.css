@@ -1,111 +1,119 @@
-/* General container for the cart */
 .cart-container {
   display: flex;
   justify-content: space-between;
-  padding: 20px;
+  gap: 32px;
+  margin: 20px;
+  align-items: flex-start; /* Align at the top */
 }
 
-/* Left section (Product Details) */
 .cart-left {
-  flex: 0.7; /* Takes 70% width of the container */
-  padding-right: 20px;
+  flex: 1; /* Occupies the remaining space */
 }
 
-.cart-left h2 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 20px;
+.cart-items {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: 16px;
 }
 
 .cart-item {
   display: flex;
-  padding: 15px;
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 15px;
+  flex-direction: row; /* Align image and details in a row */
+  gap: 16px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item-image-container {
+  flex: 0 0 150px; /* Fixed width for the image container */
+  height: 200px; /* Fixed height for the image container */
 }
 
 .cart-item-image {
-  width: 100px;
-  height: 100px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  margin-right: 15px;
 }
 
 .cart-item-details {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribute details evenly */
 }
 
 .cart-item-details h3 {
   font-size: 18px;
-  font-weight: 600;
+  margin: 0;
 }
 
-.cart-item-details p {
-  margin: 5px 0;
+.item-price {
+  font-size: 16px;
+  font-weight: bold;
+  color: #dc2626; /* Red */
 }
-
-.cart-item-size-qty {
-  display: flex;
-  gap: 20px;
+.item-description {
   font-size: 14px;
-  color: #555;
+  color: #555; /* Subtle gray for description */
+  margin: 8px 0; /* Adds spacing between description and other elements */
 }
+
 
 .remove-btn {
-  background-color: #f44336;
+  background-color: #dc2626;
   color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
 .remove-btn:hover {
-  background-color: #d32f2f;
+  background-color: #b91c1c;
 }
 
-/* Right section (Price Details) */
 .cart-right {
-  flex: 0.3; /* Takes 30% width of the container */
-  padding: 20px;
-  background-color: #f9f9f9;
+  width: 300px;
+  background-color: #f9fafb;
+  padding: 16px;
   border-radius: 8px;
-}
-
-.cart-right h3 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 20px; /* Sticks at the top while scrolling */
+  align-self: flex-start; /* Aligns at the top */
 }
 
 .price-details p {
   font-size: 16px;
-  margin: 10px 0;
-}
-
-.price-details strong {
-  font-size: 18px;
+  margin: 8px 0;
 }
 
 .checkout-btn {
-  background-color: #7f5fff; /* Purple color for checkout */
+  background-color: #0284c7;
   color: white;
-  padding: 10px 20px;
-  border: none;
-  width: 100%;
+  padding: 10px 16px;
   border-radius: 8px;
+  border: none;
   cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .checkout-btn:hover {
-  background-color: #5a3dff; /* Darker shade of purple on hover */
+  background-color: #0369a1;
 }
 
-/* Additional styling for error message */
-.error-message {
-  color: red;
-  font-size: 14px;
+@media (max-width: 768px) {
+  .cart-container {
+    flex-direction: column;
+  }
+  .cart-left,
+  .cart-right {
+    width: 100%;
+    margin-bottom: 16px;
+  }
 }

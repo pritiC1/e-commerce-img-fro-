@@ -4,7 +4,7 @@ body {
   font-family: Arial, sans-serif;
   display: flex;
   height: 100vh;
-  background-color: #f4f4f4;
+  background-color: #ffffff;
 }
 
 /* Sidebar */
@@ -46,7 +46,7 @@ body {
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 10px;
-  border: 4px solid #fff; /* White border for profile image */
+  border: 4px solid #ffffff; /* White border for profile image */
 }
 
 .profile-name {
@@ -89,7 +89,7 @@ body {
   padding: 20px;
   height: 100vh; /* Full height of the screen */
   overflow-y: auto;
-  background-color: #fafafa;
+  background-color: #ffffff;
   transition: filter 0.3s ease-in-out; /* Transition for blur effect */
 }
 .dashboard-content.blurred {
@@ -130,7 +130,7 @@ body {
 
 /* Modal Button Styles */
 .upload-modal-content button:hover {
-  background-color: #9a75da;
+  background-color: #7d4ecf;
   color: white;
 }
 
@@ -157,7 +157,7 @@ body {
 
 /* Form Buttons */
 .dashboard-content form button {
-  background-color: #9575cd; /* Soft purple background */
+  background-color: #7d4ecf; /* Soft purple background */
   color: white;
   border: none;
   padding: 10px 20px;
@@ -177,28 +177,30 @@ body {
 .dashboard-content form button:disabled {
   background-color: #d1c4e9; /* Disabled button color */
   cursor: not-allowed;
-}
+}/* Product List */
 .product-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Creates 4 equal-width columns */
   gap: 15px;
   margin-top: 20px;
 }
 
+/* Product Item */
 .product-item {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 15px;
-  width: 250px;
+  height: 450px; /* You can adjust the height if needed */
   text-align: center;
   transition: transform 0.3s ease;
 }
 
-.product-item img {
+.superuser-dashboard .product-item img {
   max-width: 100%;
   border-radius: 8px;
+  height: 220px;
 }
 
 .product-item h4 {
@@ -232,6 +234,17 @@ body {
   background-color: #a757c2; /* Darker purple for button hover */
   transform: scale(1.05); /* Slight zoom effect on hover */
 }
+@media (max-width: 768px) {
+  .product-list {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .product-list {
+    grid-template-columns: 1fr; /* 1 column on mobile screens */
+  }
+}
 
 /* Styling the Footer or any other section if necessary */
 footer {
@@ -245,6 +258,7 @@ footer {
 }
 .sidebar-menu-item.logout-button {
   background-color: #9575cd; /* Same soft purple as other buttons */
+  width: auto;
   color: white;
   padding: 10px 15px;
   border-radius: 5px;
@@ -254,9 +268,14 @@ footer {
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s;
 }
-.sidebar-menu-item.logout-button:hover {
-  background-color: #7e57c2; /* Darker purple for hover effect */
-  transform: scale(1.05); /* Slight zoom effect on hover */
+.sidebar-menu-item:hover,
+
+.login-button:hover {
+
+  background-color: #7d4ecf; /* Darker shade on hover */
+}
+.login-button {
+  background: #7d4ecf;
 }
 .product-edit-form {
   background-color: #fff;

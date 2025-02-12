@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import axios from 'axios';
 import './ProductUploadForm.css';
 
@@ -7,7 +7,26 @@ const ProductUpload = () => {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
+  const [categories, setCategories] = useState([]); // To store the list of categories
+  const [selectedCategory, setSelectedCategory] = useState(""); // To store the selected category
 
+  // Fetch categories from the backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/categories/", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Add authentication if required
+          },
+        });
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error.response?.data || error.message);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
 
   
@@ -19,6 +38,7 @@ const ProductUpload = () => {
       formData.append("price", price);
       formData.append("description", description);
       formData.append("image", image);
+      formData.append("category", selectedCategory); // Add the selected category
 
       try {
           const response = await axios.post("http://localhost:8000/api/products/", formData, {
@@ -36,6 +56,7 @@ const ProductUpload = () => {
       setPrice("");
       setDescription("");
       setImage(null);
+      setSelectedCategory("");
       } catch (error) {
           console.error("Error uploading product:", error.response?.data || error.message);
       }
@@ -70,6 +91,23 @@ const ProductUpload = () => {
             onChange={(e) => setDescription(e.target.value)}
             required
           />
+        </div>
+        <div className="form-group">
+          <label>Category:</label>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            required
+          >
+            <option value="" disabled>
+              Select a category
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
           <label>Image:</label>

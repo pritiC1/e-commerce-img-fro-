@@ -1,350 +1,217 @@
-/* Dashboard Layout */
+/* UserDashboard.css */
+
+/* General dashboard styling */
 .dashboard {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
   font-family: Arial, sans-serif;
-}
-
-/* Main Content Area */
-.dashboard-content {
-  display: flex;
-  flex: 1;
-  padding: 20px;
-  justify-content: space-between;
-  gap: 30px;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-}
-
-
-
-/* Main Content */
-.main-content {
-  flex: 1;
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Product Form Styling */
-.product-form {
+  background-color: #ffff;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  max-width: 10px;  /* Reduced the width */
-  margin-bottom: 30px; /* Space between form and product list */
-  margin-top: 20px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  max-width: 1400px;
 }
 
-.product-form input,
-.product-form button {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+.navbar {
+  background-color: #222;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
-.product-form input:focus {
-  outline: none;
-  border-color: #3498db;
+.navbar .logo img {
+  height: 50px;
 }
 
-.product-form button {
-  background-color: #3498db;
+.navbar-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navbar-button,
+.like-button,
+.login-button {
+  background-color: #ff6f61;
   color: white;
+  padding: 10px 15px;
+  border: none;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  border-radius: 5px;
+  font-size: 14px;
+  
 }
 
-.product-form button:hover {
-  background-color: #2980b9;
+.navbar-button:hover,
+.like-button:hover,
+.login-button:hover {
+  background-color: #e25f55;
 }
 
-.product-form button:disabled {
-  background-color: #bdc3c7;
-  cursor: not-allowed;
+.profile-button {
+  position: relative;
 }
 
+.profile-button img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.profile-popup {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+}
+
+.profile-popup .popup-content h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.profile-popup .popup-content p {
+  font-size: 14px;
+  color: #555;
+}
+
+.profile-popup .logout-button {
+  background-color: #ff6f61;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.profile-popup .logout-button:hover {
+  background-color: #e25f55;
+}
+
+/* Main content styling */
+.main-content {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
 .product-list {
-  margin-top: 20px;
-  display: flex; /* Use flexbox for row layout */
-  flex-wrap: wrap; /* Allow items to wrap into multiple rows */
-  gap: 20px; /* Space between items */
-  justify-content: center; /* Align items in the center */
+  margin:0px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Ensures 5 products per row */
+  gap: 2px; /* Space between products */
+  justify-content: center; /* Centers the grid */
 }
 
 .product-item {
-  background-color: #ecf0f1;
-  padding: 20px;
+  background-color: white;
+  padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  position: relative;
-  text-align: center; /* Center text inside the product item */
+  height: 330px;
+  overflow: hidden;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  cursor: pointer;
+  width: 100%; /* Makes sure each product takes full grid cell */
 }
 
 
 .product-item:hover {
   transform: translateY(-5px);
+  box-shadow: 0px 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.product-item img {
+  max-width: 100%;
+  height: 200px;
+  border-radius: 5px;
 }
 
 .product-item h4 {
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 10px;
+  margin:  0;
+  font-size: 16px;
 }
 
 .product-item p {
   font-size: 14px;
-  color:  #555;
-  margin: 5px 0;
+  color: #020202;
 }
 
-.product-item button {
-  margin-top: 15px;
-  padding: 8px 15px;
-  background-color: #3ce7d9;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.like-container{
+  gap: 5px;
+  margin-top: -3px;
+  margin-left: -100px;
+}
+
+
+.share-container {
+  margin-top: -15px;
+  margin-left: 50px;
+}
+
+.like-container svg {
   cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.like-container span {
   font-size: 14px;
 }
 
-.product-item button:hover {
-  background-color: #2b9bc0;
-}
-
-.product-item img {
-  width: 100%;  /* Make sure the image takes the full width of the container */
-  height: 100%;
-  object-fit: cover;  /* Ensures the image covers the container without distortion */
-  border-radius: 5px;  /* Rounded corners for the image */
-  margin-top: 10px;  /* Space from the top */
-
-  height: 350px; 
-}
-
-/* Like/Heart Button Styling */
-
-/* Error Message */
 .error {
-  color: #e74c3c;
+  color: red;
+  font-size: 14px;
+  text-align: center;
+}
+
+.profile-popup .popup-content h5 {
+  margin-top: 10px;
   font-size: 16px;
-  margin-top: 15px;
+  color: #333;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+.profile-popup .popup-content ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.profile-popup .popup-content li {
+  font-size: 14px;
+  color: #666;
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .main-content {
+    padding: 10px;
+  }
+
   .product-list {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust for smaller screens */
+    grid-template-columns: 1fr 1fr;
   }
 
-  .product-item {
-    padding: 15px;
-  }
-
-  .product-item h4 {
-    font-size: 18px;
-  }
-
-  .product-item p {
-    font-size: 12px;
-  }
-}
-@media (max-width: 768px) {
-  .product-item img {
-    height: 200px; /* Smaller height for medium screens */
-  }
-}
-
-@media (max-width: 480px) {
-  .product-item img {
-    height: 150px; /* Smaller height for small screens */
-  }
-}
-
-
-@media (max-width: 480px) {
-  /* For smaller screens, you may want to stack the items vertically */
-  .product-list {
-    grid-template-columns: 1fr; /* Single column layout */
+  .profile-popup {
+    width: 200px;
   }
 
   .product-item {
     padding: 10px;
   }
-}
-
-
-.navbar {
-  display: flex;
-  justify-content: space-around;
-  background-color: #ffffff;
-  padding: 10px;
-}
-
-.navbar button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  text-align: center
-}
-.logo img {
-  height: 50px;
-  width: auto;
-}
-/* Like/Heart Button Styling */
-.like-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.like-container button {
-  background: none;
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.like-container button:focus {
-  outline: none;
-}
-
-.like-container .heart-icon {
-  font-size: 24px;
-  color: grey;
-  transition: color 0.3s ease;
-}
-
-.like-container .heart-icon.liked {
-  color: red;
-}
-.product-image {
-  width: 100%;  /* Maintain full width */
-  height: 200px;  /* Reduce height to 200px */
-  object-fit: cover;  /* Keep aspect ratio without distortion */
-  border-radius: 8px;  /* Rounded corners */
-  margin-bottom: 10px;  /* Space at the bottom */
-}
-.auth-buttons .profile-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.liked-notification {
-  font-size: 12px;
-  color: green;
-  margin-top: 5px;
-}
-
-
-.like-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.add-to-cart:hover {
-  background-color: #0056b3;
-}
-
-.popup-notification {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background-color: #28a745;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-.profile-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-
-/* Profile popup */
-.profile-popup {
-  position: absolute;
-  top: 50px; /* Positioning above the profile button */
-  right: 10px;
-  width: 250px;
-  padding: 15px;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  z-index: 10;
-  border: 1px solid #ddd;
-}
-
-/* Popup content */
-.popup-content {
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-}
-
-/* Profile popup headings */
-.popup-content h4 {
-  margin-bottom: 10px;
-}
-
-.popup-content h5 {
-  margin-top: 15px;
-  font-size: 16px;
-}
-
-/* Logout button */
-.logout-button {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-/* On hover, profile button will show a popup */
-.profile-button:hover {
-  background-color: #e0e0e0;
-}
-.home-icon {
-  font-size: 24px; /* Adjust the font size for the icon */
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.home-icon:hover {
-  background-color: #007bff; /* Change background on hover */
-  transform: scale(1.1); /* Slightly enlarge the icon on hover */
-}
-
-.home-icon:active {
-  transform: scale(1); /* Return to normal size when clicked */
-  background-color: #0056b3; /* A darker background color when clicked */
 }

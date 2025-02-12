@@ -5,7 +5,7 @@ import { faHeart as regularHeart, faHeart as solidHeart } from '@fortawesome/fre
 import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from 'jwt-decode'; // Correct import for jwtDecode
 import './UserDashboard.css'; // Create a CSS file for styling
-import logo from '../Assets/logo.png';
+import logo from '../Assets/AURA/2.jpg';
 import profile from '../Assets/profile.jpg';
 import ShareButton from './Sharebutton';
 
@@ -263,7 +263,7 @@ const Dashboard = ( user) => {
       </nav>
     
 
-      <div className="dashboard-content">
+      <div className="main-content">
         
          
         </div>
@@ -286,27 +286,28 @@ const Dashboard = ( user) => {
                   />
                   <h4>{product.name}</h4>
                   <p>{product.description}</p>
-                  <p>Price: ${product.price}</p>
-
+                  <p><b>₹ {product.price}</b></p>
+                  
                   <div className="like-container">
-                  <FontAwesomeIcon
-                    icon={likedProducts[product.id] ? solidHeart : regularHeart}
-                    style={{
-                      color: likedProducts[product.id] ? 'red' : 'grey',
-                      cursor: 'pointer',
-                      fontSize: '24px',
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent navigating to the product detail page
-                      handleLike(product.id);
-                    }}
-                  />
-                  <span>{product.like_count} likes</span>
-                  </div>
-                {/* Add ShareButton */}
-                <ShareButton productUrl={`http://127.0.0.1:8000/app/products/${product.id}`} />
-              </div>
-                
+    <FontAwesomeIcon
+      icon={likedProducts[product.id] ? solidHeart : regularHeart}
+      style={{
+        color: likedProducts[product.id] ? 'red' : 'grey',
+        cursor: 'pointer',
+        fontSize: '24px',
+      }}
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent navigating to the product detail page
+        handleLike(product.id);
+      }}
+    />
+    <span>{product.like_count}</span>
+  </div>
+
+  <div className="share-container">
+    <ShareButton productUrl={`http://127.0.0.1:8000/app/products/${product.id}`} />
+  </div>
+</div>
                   
               ))}
             </div>

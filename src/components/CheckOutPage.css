@@ -1,0 +1,211 @@
+/* Checkout Page Styles */
+.checkout-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2, h3, h4 {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 28px;
+  }
+  
+  h3 {
+    font-size: 22px;
+  }
+  
+  h4 {
+    font-size: 20px;
+    color: #16a085;
+  }
+  
+  /* Product list styling */
+  .product-list {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping to the next line if there is not enough space */
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .product-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 30%; /* Adjust this to fit the number of products per row */
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .product-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .product-item p {
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  
+  .product-item .product-price {
+    font-size: 16px;
+    color: #e74c3c;
+    font-weight: bold;
+  }
+  
+  /* Form inputs styling */
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+    box-sizing: border-box;
+  }
+  
+  .input-group label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .input-group input:focus {
+    border-color: #16a085;
+    outline: none;
+  }
+  
+  textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    height: 100px;
+  }
+  
+  textarea:focus {
+    border-color: #16a085;
+    outline: none;
+  }
+  
+  /* Payment method and order summary */
+  .payment-method, .order-summary, .delivery-options {
+    margin-bottom: 20px;
+  }
+  
+  .payment-method label,
+  .order-summary p,
+  .delivery-options label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .payment-method input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  .payment-method input[type="radio"]:checked {
+    background-color: #16a085;
+  }
+  
+  .order-summary {
+    background-color: #ecf0f1;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .order-summary p {
+    margin-bottom: 10px;
+  }
+  
+  .order-summary h4 {
+    margin-top: 10px;
+    color: #e74c3c;
+  }
+  
+  /* Button styling */
+  button {
+    padding: 12px 20px;
+    font-size: 18px;
+    color: white;
+    background-color: #16a085;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #1abc9c;
+  }
+  
+  button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+  
+  /* Media Queries for Responsiveness */
+  @media screen and (max-width: 768px) {
+    .checkout-container {
+      width: 90%;
+    }
+  
+    .product-list {
+      margin-bottom: 15px;
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .product-item {
+      width: 80%; /* Change width to be more flexible on smaller screens */
+      margin-bottom: 10px;
+    }
+  
+    button {
+      font-size: 16px;
+      padding: 10px;
+    }
+  }
+  
+  @media screen and (max-width: 480px) {
+    h2 {
+      font-size: 24px;
+    }
+  
+    .input-group input,
+    textarea {
+      font-size: 14px;
+    }
+  
+    button {
+      font-size: 14px;
+      padding: 8px;
+    }
+  }
+  

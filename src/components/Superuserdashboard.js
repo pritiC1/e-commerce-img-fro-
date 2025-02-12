@@ -399,29 +399,35 @@ const SuperUserDashboard = () => {
 
 
 
-
-        <div className="sidebar-menu">
-          <Link to="/" className="sidebar-menu-item">
-            Home
-          </Link>
-          <button
-            className="sidebar-menu-item"
-            onClick={() => {
-              setShowUploadForm(!showUploadForm);
-              setSelectedProduct(null); // Clear selected product when toggling upload form
-            }}
-          >
-            {showUploadForm ? "Close Form" : "Upload Product"}
-          </button>
-          <Link to="/orders" className="sidebar-menu-item">
-            Orders
-          </Link>
-           <Link to="/login">
-              <button className="login-button">Logout</button>
-            </Link>
-        </div>
-      </aside>
-      
+<div className="sidebar-menu flex flex-col items-center gap-4">
+  <Link
+    to="/"
+    className="sidebar-menu-item flex justify-center items-center w-32 h-12 bg-blue-500 text-white rounded-md text-center"
+  >
+    Home
+  </Link>
+  <button
+    className="sidebar-menu-item flex justify-center items-center w-32 h-12 bg-blue-500 text-white rounded-md"
+    onClick={() => {
+      setShowUploadForm(!showUploadForm);
+      setSelectedProduct(null); // Clear selected product when toggling upload form
+    }}
+  >
+    {showUploadForm ? "Close Form" : "Upload Product"}
+  </button>
+  <Link
+    to="/orders"
+    className="sidebar-menu-item flex justify-center items-center w-32 h-12 bg-blue-500 text-white rounded-md text-center"
+  >
+    Orders
+  </Link>
+  <Link to="/login">
+    <button className="login-button flex justify-center items-center w-32 h-12 bg-blue-500 text-white rounded-md">
+      Logout
+    </button>
+  </Link>
+</div>
+</aside>
       
       <div className="dashboard-content">
 
@@ -533,8 +539,8 @@ const SuperUserDashboard = () => {
                     )}
                     
                         <>
-                          <button onClick={() => handleEdit(product)}>Edit Product</button>
-                          <button onClick={() => handleDelete(product.id)}>Delete Product</button>
+                          <button onClick={() => handleEdit(product)}>Edit </button>
+                          <button onClick={() => handleDelete(product.id)}>Delete </button>
                         </>
                     
                         

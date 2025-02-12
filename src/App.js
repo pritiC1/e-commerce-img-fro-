@@ -19,6 +19,13 @@ import Superuserdashboard from './components/Superuserdashboard';
 import ProductDetail from './components/productDetail';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import CheckoutPage from './components/CheckOutPage';
+import Paymentpage from './components/Paymentpage';
+import Menpage from './pages/Menpage';
+
+
+
+
 
 function App() {
   return (
@@ -44,10 +51,13 @@ function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           {/* User profile and dashboard */}
           <Route path="/profile" element={<Profile />} />
+          <Route path="/Menpage" element={<Menpage />} />
           <Route path="/userdashboard" element={<UserDashboard />} />
           <Route path="/Superuserdashboard" element={<Superuserdashboard />} />
           <Route path="/likedproducts" element={<LikedProducts likedProducts={LikedProducts} />} />
           <Route path="/cart" element={<Cart />} /> {/* Route to view and manage cart */}
+          <Route path="/CheckOutPage" element={<CheckoutPage />} />
+          <Route path="/payment" component={Paymentpage} />
         </Routes>
       </div>
       </CartProvider>

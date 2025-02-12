@@ -27,7 +27,7 @@
 /* Style for the product images */
 .product-image {
   width: 100%;  /* Ensure images take up the full width of the card */
-  height: auto;  /* Maintain aspect ratio */
+  height: 50px;  /* Maintain aspect ratio */
   object-fit: contain;  /* Ensure the whole image is visible without cropping */
   max-height: 300px;  /* Optional: Prevent large images */
   border-radius: 8px;

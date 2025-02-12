@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // State to handle error messages
+  const [loading, setLoading] = useState(false); // State for loader
   const navigate = useNavigate();
 
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
 
     if (!refreshToken) {
-      // No refresh token, handle logout
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      window.location.href = '/login'; // Redirect to login page
+      window.location.href = '/login';
       return null;
     }
 
@@ -25,86 +26,72 @@ const Login = () => {
         refresh: refreshToken,
       });
 
-      // Store new access token
       const newAccessToken = response.data.access;
       localStorage.setItem('access_token', newAccessToken);
       return newAccessToken;
     } catch (error) {
-      // Handle token refresh error
       console.error('Error refreshing token', error);
       return null;
     }
   };
 
-  // Axios interceptor to refresh token on expiry
   axios.interceptors.response.use(
-    (response) => response, // Pass the successful response through
+    (response) => response,
     async (error) => {
       const originalRequest = error.config;
-      
-      // Check if it's a 401 error (Unauthorized) and we haven't already retried
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
-
-        // Try refreshing the token
         const newAccessToken = await refreshAccessToken();
         if (newAccessToken) {
-          // Retry the original request with the new access token
           originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return axios(originalRequest); // Retry the request
+          return axios(originalRequest);
         }
       }
-      return Promise.reject(error); // If the refresh failed, reject the error
+      return Promise.reject(error);
     }
   );
 
-
-
-
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true); // Show loader
+
     try {
-      // Send a POST request to the login endpoint
       const response = await axios.post('http://localhost:8000/api/login/', {
         username,
         password,
       });
 
       const accessToken = response.data.access;
-      const isSuperuser = response.data.is_superuser;  // Assuming the login API returns this data
+      const isSuperuser = response.data.is_superuser;
 
-
-
-      // Store tokens in localStorage
-      localStorage.setItem('access_token', response.data.access);  // Access token
-      localStorage.setItem('refresh_token', response.data.refresh); // Refresh token
-      localStorage.setItem('is_superuser', isSuperuser);  // Store the superuser status
-
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+      localStorage.setItem('is_superuser', isSuperuser);
 
       axios.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
-      
-      
-      if (isSuperuser) {
-        navigate('/Superuserdashboard');  // Redirect to Superuser Dashboard
-      } else {
-        navigate('/UserDashboard');  // Redirect to User Dashboard
-      }
+      toast.success('Login successful!', { position: 'top-right', autoClose: 2000 });
+
+      setTimeout(() => {
+        setLoading(false); // Hide loader before redirecting
+        if (isSuperuser) {
+          navigate('/Superuserdashboard');
+        } else {
+          navigate('/UserDashboard');
+        }
+      }, 2500);
     } catch (error) {
-      console.error('Login failed', error);
-      if (error.response) {
-        setError(error.response.data.error || 'Invalid username or password. Please try again.');
-      } else {
-        setError('An error occurred. Please try again.');
-      }
+      setLoading(false);
+      toast.error('Invalid username or password. Please try again.', { position: 'top-right' });
     }
   };
 
   return (
     <div className="login-container">
+      <ToastContainer />
       <form onSubmit={handleLogin}>
         <h2>Login</h2>
-        {error && <p className="error-message">{error}</p>} {/* Display error if login fails */}
+
         <input
           type="text"
           value={username}
@@ -119,7 +106,10 @@ const Login = () => {
           placeholder="Password"
           required
         />
-        <button type="submit">Login</button>
+
+        <button className="login-button" type="submit" disabled={loading}>
+          {loading ? <span className="loader"></span> : 'Login'}
+        </button>
       </form>
     </div>
   );
